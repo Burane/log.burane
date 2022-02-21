@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -12,7 +13,7 @@ export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   async login(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email: email } });
+    const user = await this.getUserByEmail(email);
 
     if (!user) throw new NotFoundException(`No user found for email: ${email}`);
 
@@ -25,7 +26,24 @@ export class AuthService {
     };
   }
 
-  getUserById(userId: string) {
-    return this.prisma.user.findUnique({ where: { id: userId } });
+  async register(email: string, password: string) {
+    const user = await this.getUserByEmail(email);
+
+    if (user) throw new ConflictException('User already exist');
+
+    await this.prisma.user.create({
+      data: {
+        email,
+        password: await bcrypt.hash(password, 10),
+      },
+    });
+  }
+
+  async getUserById(userId: string) {
+    return await this.prisma.user.findUnique({ where: { id: userId } });
+  }
+
+  async getUserByEmail(email: string) {
+    return await this.prisma.user.findUnique({ where: { email: email } });
   }
 }
