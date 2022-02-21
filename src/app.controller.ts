@@ -4,18 +4,10 @@ import { PrismaService } from './prisma/prisma.service';
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private prisma: PrismaService,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
-
-  @Get('users')
-  findUsers() {
-    return this.prisma.user.findMany();
+  getVersion() {
+    return this.appService.getVersion();
   }
 }
