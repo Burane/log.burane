@@ -5,7 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { CanCUDUserGuard } from './user/guards/can-c-u-dser-guard.service';
+import { CanCUDUserGuard } from './user/guards/canCUDUser.guard';
 
 @Module({
   imports: [PrismaModule, AuthModule, ConfigModule.forRoot(), UserModule],
