@@ -15,8 +15,11 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return name and api version', () => {
+      expect(appController.getVersion()).toBe({
+        name: process.env.npm_package_name,
+        version: process.env.npm_package_version,
+      });
     });
   });
 });

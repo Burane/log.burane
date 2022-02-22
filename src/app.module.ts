@@ -4,10 +4,12 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
+import { CanCUDUserGuard } from './user/guards/can-c-u-dser-guard.service';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ConfigModule.forRoot()],
+  imports: [PrismaModule, AuthModule, ConfigModule.forRoot(), UserModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CanCUDUserGuard],
 })
 export class AppModule {}

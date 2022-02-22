@@ -15,6 +15,7 @@ enum Role {
   ADMIN
   SUPERADMIN
 }
+
 model User {
   id        String      @default(cuid()) @id
   email     String      @unique

@@ -1,7 +1,7 @@
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import { PrismaClientExceptionFilter } from './prisma-client-exception.filter';
+import { PrismaClientExceptionFilter } from './utils/exceptionFilter/prisma-client-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
