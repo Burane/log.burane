@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
     };
   }
 
-  async register(email: string, password: string) {
+  async register(email: string, password: string, role: Role = Role.USER) {
     const user = await this.getUserByEmail(email);
 
     if (user) throw new ConflictException('User already exist');
@@ -35,6 +36,7 @@ export class AuthService {
       data: {
         email,
         password: await bcrypt.hash(password, 10),
+        role,
       },
     });
   }
