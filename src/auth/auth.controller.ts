@@ -27,4 +27,11 @@ export class AuthController {
   registerAdmin(@Body() { email, password }: RegisterDto) {
     return this.authService.register(email, password, Role.ADMIN);
   }
+
+  @Roles(Role.SUPERADMIN)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Post('registerAdmin')
+  registerSuperAdmin(@Body() { email, password }: RegisterDto) {
+    return this.authService.register(email, password, Role.SUPERADMIN);
+  }
 }
