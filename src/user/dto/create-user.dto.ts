@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
 import { Match } from '../../utils/decorator/match.decorator';
 import { Role } from '@prisma/client';
 
@@ -10,8 +10,9 @@ export class CreateUserDto {
   password: string;
 
   @IsNotEmpty()
-  @Match('password')
+  @Match('password', { message: "Passwords don't match each other" })
   passwordConfirmation: string;
 
+  @IsEnum(Role, { message: 'Role is not valid' })
   role?: Role;
 }
