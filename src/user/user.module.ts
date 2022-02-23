@@ -4,7 +4,9 @@ import { UserController } from './user.controller';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 
 @Module({
+  imports: [JwtGuard],
   controllers: [UserController],
   providers: [UserService, JwtGuard],
+  exports: [UserService],
 })
 export class UserModule {}

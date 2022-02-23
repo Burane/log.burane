@@ -16,6 +16,7 @@ import { UserService } from '../user/user.service';
       secret: Process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: '3600s' },
     }),
+    UserService,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtGuard, JwtStrategy, RolesGuard, UserService],

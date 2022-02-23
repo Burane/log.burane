@@ -23,14 +23,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(CanCUDUserGuard)
-  @Post()
+  @Post('create')
   create(@Body() { email, password, role }: CreateUserDto) {
     return this.userService.create(email, password, role);
   }
 
   @Roles(Role.ADMIN, Role.SUPERADMIN)
   @UseGuards(RolesGuard)
-  @Get()
+  @Get('all')
   findAll() {
     return this.userService.getAll();
   }
