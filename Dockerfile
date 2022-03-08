@@ -7,7 +7,9 @@ COPY . .
 RUN npm run build
 
 FROM node:16
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist ./dist
+WORKDIR /app
+COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/package*.json /app/
+COPY --from=builder /app/.env /app/
+COPY --from=builder /app/dist /app/dist
 CMD [ "npm", "run", "start:prod" ]

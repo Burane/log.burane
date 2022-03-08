@@ -9,6 +9,7 @@ export class PrismaService
   constructor() {
     super();
   }
+
   async onModuleInit() {
     await this.$connect();
   }
