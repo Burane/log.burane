@@ -12,4 +12,5 @@ COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package*.json /app/
 COPY --from=builder /app/.env /app/
 COPY --from=builder /app/dist /app/dist
+RUN prisma migrate deploy
 CMD [ "npm", "run", "start:prod" ]
