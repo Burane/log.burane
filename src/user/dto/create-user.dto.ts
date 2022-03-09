@@ -1,7 +1,8 @@
 import { IsEmail, IsEnum, IsString, Matches } from 'class-validator';
 import { Match } from '../../utils/decorator/match.decorator';
 import { Role } from '@prisma/client';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { roleArray } from '../../utils/types/role.array';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -20,7 +21,7 @@ export class CreateUserDto {
   @Match('password', { message: "Passwords don't match each other" })
   passwordConfirmation: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional({ enum: roleArray })
   @IsEnum(Role, { message: 'Role is not valid' })
   role?: Role;
 }
