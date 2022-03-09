@@ -1,4 +1,10 @@
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  Matches,
+} from 'class-validator';
 import { Match } from '../../utils/decorator/match.decorator';
 import { Role } from '@prisma/client';
 
@@ -6,10 +12,13 @@ export class UpdateUserDto {
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
+  @IsString()
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'Password is too weak',
+  })
   password: string;
 
-  @IsNotEmpty()
+  @IsString()
   @Match('password', { message: "Passwords don't match each other" })
   passwordConfirmation: string;
 
