@@ -38,7 +38,7 @@ export class UserService {
       where: { id },
       data: {
         email,
-        password,
+        password: await bcrypt.hash(password, 10),
         role,
       },
     });
