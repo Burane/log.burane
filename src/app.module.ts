@@ -17,12 +17,20 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     ConfigModule.forRoot(),
     UserModule,
     MailerModule.forRoot({
-      transport: {},
+      transport: {
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT),
+        secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      },
       defaults: {
         from: '"nest-modules" <modules@nestjs.com>',
       },
       template: {
-        dir: path.join(process.cwd(), 'templates'),
+        dir: path.join(process.cwd(), 'src/templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,

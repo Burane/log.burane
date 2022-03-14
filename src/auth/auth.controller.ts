@@ -1,10 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { AuthEntity } from './entities/auth.entity';
 import { ForgotPasswordDto } from './dto/forgotPassword.dto';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +24,11 @@ export class AuthController {
 
   @Post('forgotPassword')
   forgotPassword(@Body() { email }: ForgotPasswordDto) {
-    return this;
+    return this.authService.forgotPassword(email);
+  }
+
+  @Post('resetPassword')
+  resetPassword(@Body() { password, token }: ResetPasswordDto) {
+    return this.authService.resetPassword(password, token);
   }
 }

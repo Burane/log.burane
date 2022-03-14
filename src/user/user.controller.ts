@@ -57,11 +57,9 @@ export class UserController {
   @ApiCreatedResponse({ type: UserEntity })
   async update(
     @Param('id') id: string,
-    @Body() { email, password, role }: UpdateUserDto,
+    @Body() { email, role }: UpdateUserDto,
   ) {
-    return new UserEntity(
-      await this.userService.updateById(id, email, password, role),
-    );
+    return new UserEntity(await this.userService.updateById(id, email, role));
   }
 
   @UseGuards(CanCUDUserGuard)

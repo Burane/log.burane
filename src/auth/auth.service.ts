@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
 import { UserService } from '../user/user.service';
 import { MailerService } from '@nestjs-modules/mailer';
-import path from 'path';
+import * as path from 'path';
 
 @Injectable()
 export class AuthService {
@@ -45,15 +45,35 @@ export class AuthService {
 
     const token = this.jwtService.sign(
       { id: user.id, email: user.email },
-      { secret: user.password + user.id, expiresIn: 3600 },
+      { secret: user.password + user.id + user.createdAt, expiresIn: 3600 },
     );
 
-    const mail = await this.mailerService.sendMail({
+    await this.mailerService.sendMail({
       to: user.email,
-      from: 'AB-Resto',
+      from: process.env.RESET_PASSWORD_SENDER_EMAIL,
       subject: 'Password reset',
-      template: path.join(process.cwd(), 'templates', 'resetPasswordMail'),
+      template: path.join(process.cwd(), 'resetPasswordMail'),
       context: { user, token },
     });
+  }
+
+  async resetPassword(password: string, token: string) {
+    const payload: { [p: string]: any } | string =
+      this.jwtService.decode(token);
+
+    const user = await this.userService.getById(payload['id']);
+
+    if (!user)
+      throw new NotFoundException(`No user found for email: ${payload['id']}`);
+
+    try {
+      this.jwtService.verify(token, {
+        secret: user.password + user.id + user.createdAt,
+      });
+    } catch (error) {
+      throw new UnauthorizedException('Unable to verify the token');
+    }
+
+    await this.userService.updatePasswordById(payload['id'], password);
   }
 }

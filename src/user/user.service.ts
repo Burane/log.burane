@@ -33,13 +33,21 @@ export class UserService {
     return await this.prisma.user.findUnique({ where: { email: email } });
   }
 
-  async updateById(id: string, email: string, password: string, role: Role) {
+  async updateById(id: string, email: string, role: Role) {
     return await this.prisma.user.update({
       where: { id },
       data: {
         email,
-        password: await bcrypt.hash(password, 10),
         role,
+      },
+    });
+  }
+
+  async updatePasswordById(id: string, password: string) {
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: await bcrypt.hash(password, 10),
       },
     });
   }
