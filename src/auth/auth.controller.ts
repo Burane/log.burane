@@ -4,6 +4,7 @@ import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { AuthEntity } from './entities/auth.entity';
+import { ForgotPasswordDto } from './dto/forgotPassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,5 +19,10 @@ export class AuthController {
   @Post('register')
   register(@Body() { email, password }: CreateUserDto) {
     return this.authService.register(email, password);
+  }
+
+  @Post('forgotPassword')
+  forgotPassword(@Body() { email }: ForgotPasswordDto) {
+    return this;
   }
 }
