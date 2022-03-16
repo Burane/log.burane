@@ -44,7 +44,7 @@ export class AuthService {
     if (!user) throw new NotFoundException(`No user found for email: ${email}`);
 
     const token = this.jwtService.sign(
-      { id: user.id, email: user.email },
+      { email: user.email },
       { secret: user.password + user.id + user.createdAt, expiresIn: 3600 },
     );
 
@@ -61,10 +61,12 @@ export class AuthService {
     const payload: { [p: string]: any } | string =
       this.jwtService.decode(token);
 
-    const user = await this.userService.getById(payload['id']);
+    const user = await this.userService.getByEmail(payload['email']);
 
     if (!user)
-      throw new NotFoundException(`No user found for email: ${payload['id']}`);
+      throw new NotFoundException(
+        `No user found for email: ${payload['email']}`,
+      );
 
     try {
       this.jwtService.verify(token, {
@@ -74,6 +76,6 @@ export class AuthService {
       throw new UnauthorizedException('Unable to verify the token');
     }
 
-    await this.userService.updatePasswordById(payload['id'], password);
+    await this.userService.updatePasswordById(user.id, password);
   }
 }
