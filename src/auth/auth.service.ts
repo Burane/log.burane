@@ -6,10 +6,11 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Role } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import { UserService } from '../user/user.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as path from 'path';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -29,9 +30,39 @@ export class AuthService {
 
     if (!isPasswordValid) throw new UnauthorizedException('Invalid password');
 
+    const accessToken = this.generateAccessToken(user);
+    const refreshToken = this.generateRefreshToken(user);
+    await this.userService.updateRefreshTokenById(refreshToken, user.id);
+
     return {
-      accessToken: this.jwtService.sign({ userId: user.id }),
+      accessToken,
+      refreshToken,
+      user: new UserEntity(user),
     };
+  }
+
+  async logout(user: User) {
+    await this.userService.updateRefreshTokenById(null, user.id);
+  }
+
+  generateAccessToken(user: User) {
+    return this.jwtService.sign(
+      { userId: user.id },
+      {
+        secret: process.env.JWT_ACCESS_SECRET_KEY,
+        expiresIn: process.env.JWT_ACCESS_SECRET_EXPIRATION,
+      },
+    );
+  }
+
+  generateRefreshToken(user: User) {
+    return this.jwtService.sign(
+      { userId: user.id },
+      {
+        secret: process.env.JWT_REFRESH_SECRET_KEY,
+        expiresIn: process.env.JWT_REFRESH_SECRET_EXPIRATION,
+      },
+    );
   }
 
   async register(email: string, password: string, role: Role = Role.USER) {
@@ -77,5 +108,25 @@ export class AuthService {
     }
 
     await this.userService.updatePasswordById(user.id, password);
+  }
+
+  async refreshToken(user: User, refreshToken: string) {
+    if (!user) throw new UnauthorizedException();
+
+    const isRefreshTokenMatch = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (!isRefreshTokenMatch) throw new UnauthorizedException();
+
+    const newAccessToken = this.generateAccessToken(user);
+    const newRefreshToken = this.generateRefreshToken(user);
+    await this.userService.updateRefreshTokenById(refreshToken, user.id);
+
+    return {
+      newAccessToken,
+      newRefreshToken,
+    };
   }
 }

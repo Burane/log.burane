@@ -1,8 +1,9 @@
 import { Role, User } from '@prisma/client';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { roleArray } from '../../utils/types/role.array';
+import { Exclude } from 'class-transformer';
 
-export class UserEntity implements Omit<User, 'password'> {
+export class UserEntity implements User {
   constructor(user: User) {
     this.id = user.id;
     this.email = user.email;
@@ -10,6 +11,14 @@ export class UserEntity implements Omit<User, 'password'> {
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
   }
+
+  @ApiHideProperty()
+  @Exclude()
+  password: string;
+
+  @ApiHideProperty()
+  @Exclude()
+  refreshToken: string;
 
   @ApiProperty()
   id: string;
