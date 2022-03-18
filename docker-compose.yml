@@ -7,7 +7,7 @@ services:
     environment:
       DATABASE_URL : ${DATABASE_URL_DOCKER}
     ports:
-      - 3000:3000
+      - ${APP_PORT}:${APP_PORT}
     links:
       - postgres
     depends_on:
