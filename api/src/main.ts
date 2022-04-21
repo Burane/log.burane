@@ -3,14 +3,25 @@ import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { PrismaClientExceptionFilter } from './utils/exceptionFilter/prisma-client-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: true,
+      credentials: true,
+      exposedHeaders: ['*', 'Authorization'],
+    },
+  });
+
+  app.setGlobalPrefix('api/v1');
+
+  app.use(cookieParser());
 
   app.use(helmet());
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
@@ -18,10 +29,10 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   const config = new DocumentBuilder()
-    .setTitle('AB Restoration API')
-    .setDescription('AB Restoration API')
+    .setTitle('AB Restauration API')
+    .setDescription('AB Restauration API')
     .setVersion('1.0')
-    .addTag('AB Restoration API')
+    .addTag('AB Restauration API')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);

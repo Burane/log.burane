@@ -1,4 +1,6 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -17,6 +19,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    @Inject(forwardRef(() => UserService))
     private userService: UserService,
     private mailerService: MailerService,
   ) {}
@@ -82,9 +85,9 @@ export class AuthService {
     await this.mailerService.sendMail({
       to: user.email,
       from: process.env.RESET_PASSWORD_SENDER_EMAIL,
-      subject: 'Password reset',
+      subject: 'Réinitialisation de votre mot de passe',
       template: path.join(process.cwd(), 'resetPasswordMail'),
-      context: { user, token },
+      context: { user, token, client_url: process.env.CLIENT_URL },
     });
   }
 
@@ -107,7 +110,14 @@ export class AuthService {
       throw new UnauthorizedException('Unable to verify the token');
     }
 
-    await this.userService.updatePasswordById(user.id, password);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        refreshToken: null,
+      },
+    });
+
+    return await this.userService.updatePasswordById(user.id, password);
   }
 
   async refreshToken(user: User, refreshToken: string) {

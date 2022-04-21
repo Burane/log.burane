@@ -6,13 +6,17 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role, User } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CanCUDUserGuard } from './guards/canCUDUser.guard';
@@ -22,9 +26,12 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { UserEntity } from './entities/user.entity';
+import { getRefreshTokenExpiration } from 'src/utils';
+import { PaginationQuery, PaginationResponse } from '../utils/types/pagination';
+import { users } from '../../prisma/seed/users';
 
-@Controller('user')
 @UseGuards(JwtGuard)
+@Controller('users')
 @ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -32,16 +39,42 @@ export class UserController {
   @UseGuards(CanCUDUserGuard)
   @Post('create')
   @ApiCreatedResponse({ type: UserEntity })
-  create(@Body() { email, password, role }: CreateUserDto) {
-    return this.userService.create(email, password, role);
+  async create(@Body() { email, password, role }: CreateUserDto) {
+    const user = await this.userService.create(email, password, role);
+    return new UserEntity(user);
   }
 
   @Roles(Role.ADMIN, Role.SUPERADMIN)
   @UseGuards(RolesGuard)
-  @Get('all')
-  @ApiOkResponse({ type: [UserEntity] })
-  async findAll() {
-    return (await this.userService.getAll()).map((u) => new UserEntity(u));
+  @ApiCreatedResponse({ type: PaginationResponse })
+  @Get('')
+  async findAll(
+    @Query()
+    { sort, search, pagination }: PaginationQuery,
+  ) {
+    const { pageSize, pageIndex } = pagination ?? {};
+    const {
+      users,
+      pageSize: size,
+      pageCount,
+      totalSize,
+      pageIndex: index,
+      isPreviousPage,
+      isNextPage,
+    } = await this.userService.getAll(pageSize, pageIndex, search, sort);
+
+    const response: PaginationResponse<UserEntity> = {
+      results: users.map((u) => new UserEntity(u)),
+      pagination: {
+        totalSize,
+        pageCount,
+        pageSize: size,
+        pageIndex: index,
+        isNextPage,
+        isPreviousPage,
+      },
+    };
+    return response;
   }
 
   @Roles(Role.ADMIN, Role.SUPERADMIN)
@@ -57,9 +90,19 @@ export class UserController {
   @ApiCreatedResponse({ type: UserEntity })
   async update(
     @Param('id') id: string,
-    @Body() { email, role }: UpdateUserDto,
+    @Res({ passthrough: true }) res: Response,
+    @Body() updateUserDto: UpdateUserDto,
   ) {
-    return new UserEntity(await this.userService.updateById(id, email, role));
+    const updatedUser = await this.userService.updateById(id, updateUserDto);
+
+    res.cookie('refreshToken', updatedUser.refreshToken, {
+      httpOnly: true,
+      expires: getRefreshTokenExpiration(),
+      secure: true,
+      sameSite: 'none',
+    });
+
+    return new UserEntity(updatedUser);
   }
 
   @UseGuards(CanCUDUserGuard)

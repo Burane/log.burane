@@ -4,10 +4,10 @@ import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard } from './guards/jwt.guard';
-import { JwtStrategy } from './guards/jwt.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
 import { UserService } from '../user/user.service';
-import { JwtRefreshStrategy } from './guards/jwt.refresh.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt.refresh.strategy';
 
 @Module({
   imports: [PassportModule.register({}), JwtModule.register({})],
@@ -20,5 +20,6 @@ import { JwtRefreshStrategy } from './guards/jwt.refresh.strategy';
     RolesGuard,
     UserService,
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}

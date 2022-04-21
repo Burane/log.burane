@@ -1,6 +1,6 @@
 services:
   api:
-    container_name: log-burane-api
+    container_name: ab-resto-api
     restart: always
     build:
       .
@@ -12,11 +12,11 @@ services:
       - postgres
     depends_on:
       - postgres
-    env_file:
+    .env_file:
       - .env
 
   postgres:
-    container_name: log-burane-postgre
+    container_name: ab-resto-postgre
     restart: always
     image: postgres
     ports:

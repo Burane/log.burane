@@ -1,4 +1,13 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
@@ -10,7 +19,8 @@ import { GetUser } from './decorators/get.user.decorator';
 import { User } from '@prisma/client';
 import { JwtGuard } from './guards/jwt.guard';
 import { RefreshTokenGuard } from './guards/refresh.token.guard';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { getRefreshTokenExpiration } from 'src/utils';
 
 @Controller('auth')
 export class AuthController {
@@ -18,14 +28,30 @@ export class AuthController {
 
   @Post('login')
   @ApiOkResponse({ type: AuthEntity })
-  login(@Body() { email, password }: LoginDto) {
-    return this.authService.login(email, password);
+  async login(
+    @Body() { email, password }: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { refreshToken, ...user } = await this.authService.login(
+      email,
+      password,
+    );
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      expires: getRefreshTokenExpiration(),
+      secure: process.env.NODE_ENV !== 'development',
+      sameSite: 'none',
+    });
+
+    return user;
   }
 
   @UseGuards(JwtGuard)
   @Post('logout')
   @ApiBearerAuth()
-  logout(@GetUser() user: User) {
+  logout(@GetUser() user: User, @Res({ passthrough: true }) res: Response) {
+    res.clearCookie('refreshToken');
     return this.authService.logout(user);
   }
 
@@ -40,17 +66,42 @@ export class AuthController {
   }
 
   @Post('resetPassword')
-  resetPassword(@Body() { password, token }: ResetPasswordDto) {
+  resetPassword(
+    @Body() { password, token }: ResetPasswordDto,
+    @Res({ passthrough: true }) res,
+  ) {
+    res.clearCookie('refreshToken');
     return this.authService.resetPassword(password, token);
   }
 
   @UseGuards(RefreshTokenGuard)
-  @Post('refreshToken')
+  @Get('refreshToken')
   @ApiBearerAuth()
   async refreshToken(
     @GetUser() user: User,
-    @Body() { refreshToken }: RefreshTokenDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.refreshToken(user, refreshToken);
+    const refreshToken = req.cookies.refreshToken;
+    const tokens = await this.authService.refreshToken(user, refreshToken);
+
+    res.cookie('refreshToken', tokens.newRefreshToken, {
+      httpOnly: true,
+      expires: getRefreshTokenExpiration(),
+      secure: process.env.NODE_ENV !== 'development',
+      sameSite: 'none',
+    });
+
+    return {
+      accessToken: tokens.newAccessToken,
+      user: new UserEntity(user),
+    };
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('me')
+  @ApiBearerAuth()
+  async me(@GetUser() user: User) {
+    return new UserEntity(user);
   }
 }
