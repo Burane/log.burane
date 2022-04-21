@@ -12,7 +12,7 @@ services:
       - postgres
     depends_on:
       - postgres
-    .env_file:
+    env_file:
       - .env
 
   postgres:
