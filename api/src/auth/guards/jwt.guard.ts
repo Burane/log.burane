@@ -1,5 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import {TokenExpiredError} from 'jsonwebtoken'
 
 @Injectable()
-export class JwtGuard extends AuthGuard('jwt') {}
+export class JwtGuard extends AuthGuard('jwt') {
+  handleRequest(err: any, user: any, info: any, context: any, status: any) {
+    if (info) {
+      throw new UnauthorizedException(info.message);
+    }
+    return super.handleRequest(err, user, info, context, status);
+  }
+}
