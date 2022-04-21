@@ -1,6 +1,6 @@
 services:
   api:
-    container_name: ab-resto-api
+    container_name: log-burane-api
     restart: always
     build:
       .
@@ -16,7 +16,7 @@ services:
       - .env
 
   postgres:
-    container_name: ab-resto-postgre
+    container_name: log-burane-postgre
     restart: always
     image: postgres
     ports:
@@ -29,4 +29,4 @@ services:
 
 volumes:
   postgres:
-    name: ab-resto-db
+    name: log-burane-db
