@@ -1,6 +1,3 @@
-// Use this import if you want to use "env.js" file
-// Or just specify it directly like this:
-
 /**
  * The options used to configure the API.
  */
@@ -8,18 +5,18 @@ export interface ApiConfig {
   /**
    * The URL of the api.
    */
-  url: string
+  url: string;
 
   /**
    * Milliseconds before we timeout the request.
    */
-  timeout: number
+  timeout: number;
 }
 
 /**
  * The default configuration for the app.
  */
 export const DEFAULT_API_CONFIG: ApiConfig = {
-  url: process.env.API_URL ?? 'http://localhost:3003',
+  url: import.meta.env.VITE_API_URL,
   timeout: 10000,
-}
+};

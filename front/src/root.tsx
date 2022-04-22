@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { createStore } from './stores';
 import { StoreProvider } from './providers/StoreProvider';
 import { App } from './components/App';
-import dotenv from 'dotenv'
-
-dotenv.config()
 
 const rootStore = createStore();
 

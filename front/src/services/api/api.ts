@@ -4,6 +4,7 @@ import { ApiConfig, DEFAULT_API_CONFIG } from './api.config';
 import * as Types from './api.types';
 import { ForgotPwdResult, GetUserResult, LogoutResult, RefreshTokenResult } from './api.types';
 import { Credentials, User, UserWithAccessToken } from '../../types';
+import createAuthRefreshInterceptor from 'axios-auth-refresh';
 
 /**
  * Manages all requests to the API.
@@ -33,6 +34,20 @@ export class Api {
         Accept: 'application/json',
       },
     });
+
+    createAuthRefreshInterceptor(
+      // @ts-ignore
+      this.apisauce.axiosInstance,
+      async (failedRequest: any) => {
+        const refreshTokenResult = await this.refreshToken();
+        if (refreshTokenResult.kind === 'ok') {
+          localStorage.setItem('accessToken', refreshTokenResult.result.accessToken);
+        } else {
+          await this.logout();
+        }
+      },
+    );
+
 
     this.apisauce.addAsyncRequestTransform(async (request) => {
       const accessToken = await localStorage.getItem('accessToken');
@@ -68,6 +83,8 @@ export class Api {
       const problem = getGeneralApiProblem(response);
       if (problem) return problem;
     }
+
+    localStorage.removeItem('accessToken');
 
     return { kind: 'ok' };
   }
