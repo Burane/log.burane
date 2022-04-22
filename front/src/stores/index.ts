@@ -1,24 +1,17 @@
-import RootStore, { RootStoreModel, RootStoreEnv } from "./root.store"
-import { SnapshotIn } from "mobx-state-tree"
-
+import RootStore, { RootStoreModel, RootStoreEnv } from './root.store';
+import { UserStore, UserStoreModel } from './user/user.store';
 
 export const createStore = (): RootStoreModel => {
-  // const publishedPolls = PublishedPolls.create({
-  //   polls: [publishedPollData]
-  // })
-  // const pollDraft = PollDraft.create({
-  //   choices: [{ id: shortid(), value: "" }]
-  // })
+  const userStore = UserStoreModel.create();
 
-  const env: RootStoreEnv = {  }
+  const env: RootStoreEnv = { userStore };
 
   const rootStore = RootStore.create(
     {
-      // pollDraft,
-      // publishedPolls
+      userStore,
     },
-    env
-  )
+    env,
+  );
 
-  return rootStore
-}
+  return rootStore;
+};

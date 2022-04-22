@@ -2,7 +2,12 @@ import { ApiResponse, ApisauceInstance, create } from 'apisauce';
 import { getGeneralApiProblem } from './api.problem';
 import { ApiConfig, DEFAULT_API_CONFIG } from './api.config';
 import * as Types from './api.types';
-import { ForgotPwdResult, GetUserResult, LogoutResult, RefreshTokenResult } from './api.types';
+import {
+  ForgotPwdResult,
+  GetUserResult,
+  LogoutResult,
+  RefreshTokenResult,
+} from './api.types';
 import { Credentials, User, UserWithAccessToken } from '../../types';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 
@@ -27,6 +32,10 @@ export class Api {
    */
   constructor(config: ApiConfig = DEFAULT_API_CONFIG) {
     this.config = config;
+    this.setup();
+  }
+
+  setup() {
     this.apisauce = create({
       baseURL: this.config.url,
       timeout: this.config.timeout,
@@ -41,13 +50,15 @@ export class Api {
       async (failedRequest: any) => {
         const refreshTokenResult = await this.refreshToken();
         if (refreshTokenResult.kind === 'ok') {
-          localStorage.setItem('accessToken', refreshTokenResult.result.accessToken);
+          localStorage.setItem(
+            'accessToken',
+            refreshTokenResult.result.accessToken,
+          );
         } else {
           await this.logout();
         }
       },
     );
-
 
     this.apisauce.addAsyncRequestTransform(async (request) => {
       const accessToken = await localStorage.getItem('accessToken');
@@ -56,9 +67,11 @@ export class Api {
     });
   }
 
-
   async login(credentials: Credentials): Promise<Types.LoginResult> {
-    const response: ApiResponse<any> = await this.apisauce.post('/auth/login', credentials);
+    const response: ApiResponse<any> = await this.apisauce.post(
+      '/auth/login',
+      credentials,
+    );
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response);
@@ -90,7 +103,10 @@ export class Api {
   }
 
   async forgotPassword(email: string): Promise<ForgotPwdResult> {
-    const response: ApiResponse<any> = await this.apisauce.post('/auth/forgotPassword', { email });
+    const response: ApiResponse<any> = await this.apisauce.post(
+      '/auth/forgotPassword',
+      { email },
+    );
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response);
@@ -101,7 +117,9 @@ export class Api {
   }
 
   async refreshToken(): Promise<RefreshTokenResult> {
-    const response: ApiResponse<any> = await this.apisauce.get('/auth/refreshToken');
+    const response: ApiResponse<any> = await this.apisauce.get(
+      '/auth/refreshToken',
+    );
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response);
