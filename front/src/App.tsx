@@ -13,9 +13,7 @@ export const App = ({}) => {
   );
 
   useEffect(() => {
-    (async () => {
-      setRootStore(setupRootStore());
-    })();
+    setRootStore(setupRootStore());
   }, []);
 
   if (!rootStore) {
