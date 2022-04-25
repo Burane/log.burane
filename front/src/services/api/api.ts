@@ -83,6 +83,7 @@ export class Api {
         accessToken: response.data.accessToken,
         user: response.data.user,
       };
+      localStorage.setItem('accessToken', resultUser.accessToken);
       return { kind: 'ok', result: resultUser };
     } catch {
       return { kind: 'bad-data' };

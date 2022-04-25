@@ -59,7 +59,8 @@ export const Login = observer(({}) => {
           <Button type="submit">Submit</Button>
         </Group>
       </form>
-      <Text>userStore.user: {JSON.stringify(userStore)}</Text>
+      <Text>userStore: {JSON.stringify(userStore)}</Text>
+      <Text>authStore: {JSON.stringify(authStore)}</Text>
     </Box>
   );
 });
