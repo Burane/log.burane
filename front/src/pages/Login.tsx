@@ -1,10 +1,18 @@
 import React from 'react';
 import { useForm, zodResolver } from '@mantine/form';
-import { Box, Button, Group, TextInput } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Group,
+  PasswordInput,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { z } from 'zod';
 import { useStore } from '../providers/StoreProvider';
+import { observer } from 'mobx-react-lite';
 
-export const Login = ({}) => {
+export const Login = observer(({}) => {
   const schema = z.object({
     email: z.string().email({ message: 'Invalid email' }),
     password: z.string(),
@@ -13,12 +21,12 @@ export const Login = ({}) => {
   const form = useForm({
     schema: zodResolver(schema),
     initialValues: {
-      email: '',
-      password: '',
+      email: 'superadmin@test.com',
+      password: '123456',
     },
   });
 
-  const { authStore } = useStore();
+  const { authStore, userStore } = useStore();
 
   type FormValues = typeof form.values;
   const handleSubmit = async (values: FormValues) => {
@@ -28,6 +36,7 @@ export const Login = ({}) => {
       password: values.password,
     });
     console.log(res);
+    console.log(userStore);
   };
 
   return (
@@ -40,7 +49,7 @@ export const Login = ({}) => {
           {...form.getInputProps('email')}
         />
 
-        <TextInput
+        <PasswordInput
           required
           label="Password"
           {...form.getInputProps('password')}
@@ -50,6 +59,7 @@ export const Login = ({}) => {
           <Button type="submit">Submit</Button>
         </Group>
       </form>
+      <Text>userStore.user: {JSON.stringify(userStore)}</Text>
     </Box>
   );
-};
+});
