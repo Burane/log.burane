@@ -42,26 +42,37 @@ export class Api {
       headers: {
         Accept: 'application/json',
       },
+      withCredentials: true,
     });
 
     createAuthRefreshInterceptor(
       // @ts-ignore
       this.apisauce.axiosInstance,
       async (failedRequest: any) => {
+        console.log('Refreshing token');
         const refreshTokenResult = await this.refreshToken();
+        // log refresh token result
+        console.log('refreshTokenResult', refreshTokenResult);
         if (refreshTokenResult.kind === 'ok') {
+          console.log('localstorage');
           localStorage.setItem(
             'accessToken',
             refreshTokenResult.result.accessToken,
           );
+          failedRequest.response.config.headers['Authorization'] =
+            'Bearer ' + refreshTokenResult.result.accessToken;
         } else {
           await this.logout();
         }
       },
+      {
+        shouldRefresh: (error: any) =>
+          error?.response?.data?.message === 'jwt expired',
+      },
     );
 
-    this.apisauce.addAsyncRequestTransform(async (request) => {
-      const accessToken = await localStorage.getItem('accessToken');
+    this.apisauce.addRequestTransform((request) => {
+      const accessToken = localStorage.getItem('accessToken');
       if (!accessToken) return;
       request.headers.Authorization = `Bearer ${accessToken}`;
     });
@@ -120,6 +131,7 @@ export class Api {
   async refreshToken(): Promise<RefreshTokenResult> {
     const response: ApiResponse<any> = await this.apisauce.get(
       '/auth/refreshToken',
+      {},
     );
 
     if (!response.ok) {
@@ -132,6 +144,7 @@ export class Api {
         accessToken: response.data.accessToken,
         user: response.data.user,
       };
+      localStorage.setItem('accessToken', resultUser.accessToken);
       return { kind: 'ok', result: resultUser };
     } catch {
       return { kind: 'bad-data' };
@@ -140,7 +153,8 @@ export class Api {
 
   async getMySelf(): Promise<GetUserResult> {
     const response: ApiResponse<any> = await this.apisauce.get(`/auth/me`);
-
+    console.log('response');
+    console.log(response);
     if (!response.ok) {
       const problem = getGeneralApiProblem(response);
       if (problem) return problem;

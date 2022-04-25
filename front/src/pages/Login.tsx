@@ -11,6 +11,7 @@ import {
 import { z } from 'zod';
 import { useStore } from '../providers/StoreProvider';
 import { observer } from 'mobx-react-lite';
+import { GetMe } from '../components/GetMe';
 
 export const Login = observer(({}) => {
   const schema = z.object({
@@ -61,6 +62,7 @@ export const Login = observer(({}) => {
       </form>
       <Text>userStore: {JSON.stringify(userStore)}</Text>
       <Text>authStore: {JSON.stringify(authStore)}</Text>
+      <GetMe />
     </Box>
   );
 });
