@@ -49,12 +49,8 @@ export class Api {
       // @ts-ignore
       this.apisauce.axiosInstance,
       async (failedRequest: any) => {
-        console.log('Refreshing token');
         const refreshTokenResult = await this.refreshToken();
-        // log refresh token result
-        console.log('refreshTokenResult', refreshTokenResult);
         if (refreshTokenResult.kind === 'ok') {
-          console.log('localstorage');
           localStorage.setItem(
             'accessToken',
             refreshTokenResult.result.accessToken,
@@ -153,8 +149,6 @@ export class Api {
 
   async getMySelf(): Promise<GetUserResult> {
     const response: ApiResponse<any> = await this.apisauce.get(`/auth/me`);
-    console.log('response');
-    console.log(response);
     if (!response.ok) {
       const problem = getGeneralApiProblem(response);
       if (problem) return problem;
