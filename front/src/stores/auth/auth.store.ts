@@ -51,7 +51,6 @@ export const AuthStoreModel = types
         self.setStatus('done');
         self.setAuthenticated(false);
         self.rootStore.userStore.resetUser();
-        yield AsyncStorage.removeItem('accessToken');
       } else {
         self.setStatus('error');
         self.setAuthenticated(false);

@@ -1,4 +1,4 @@
-  import {
+import {
   BadRequestException,
   ConflictException,
   forwardRef,
@@ -21,7 +21,8 @@ export class UserService {
     private prisma: PrismaService,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
-  ) {}
+  ) {
+  }
 
   async create(email, password, role: Role = Role.USER) {
     const user = await this.getByEmail(email);
@@ -113,6 +114,10 @@ export class UserService {
     });
   }
 
+  /*
+  @param refreshToken: string
+  @returns User
+  */
   async updateById(id: string, updateUserDto: UpdateUserDto) {
     if (updateUserDto.email) {
       const userExists = await this.getByEmail(updateUserDto.email);
@@ -150,6 +155,12 @@ export class UserService {
     });
   }
 
+  /*
+   * update password
+   * @param id
+   * @param updatePasswordDto
+   * @returns {Promise<void>}
+   */
   async updatePasswordById(id: string, password: string) {
     return await this.prisma.user.update({
       where: { id },
