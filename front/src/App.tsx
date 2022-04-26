@@ -6,11 +6,11 @@ import { StoreProvider } from './providers/StoreProvider';
 import { RootStoreModel } from './stores/root.store';
 import { setupRootStore } from './stores/store.persistence';
 import { Center, Loader } from '@mantine/core';
-import { Layout } from './components/Layout';
 import { RequireAuth } from './components/RequireAuth';
 import { Auth } from './components/Auth';
 import { observer } from 'mobx-react-lite';
 import { Role } from './types';
+import { ForgotPassword } from './pages/ForgotPassword';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -37,19 +37,12 @@ export const App = observer(({}) => {
           <Route path="/" element={<HelloWorld />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Login />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<Login />} />
           <Route
-            element={
-              <RequireAuth
-                isAllowed={
-                  authStore.isAuthenticated &&
-                  userStore.role === Role.SUPERADMIN
-                }
-              />
-            }
+            element={<RequireAuth isAllowed={authStore.isAuthenticated} />}
           >
-            <Route path="/auth1" element={<Auth />} />
-            <Route path="/admin" element={<Auth />} />
+            <Route path="/dashboard" element={<Auth />} />
           </Route>
         </Routes>
       </BrowserRouter>
