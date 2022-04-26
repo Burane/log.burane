@@ -33,16 +33,16 @@ export const Login = observer(({}) => {
   });
 
   const { authStore, userStore } = useStore();
-
   type FormValues = typeof form.values;
+
   const handleSubmit = async (values: FormValues) => {
     console.log(values);
     let res = await authStore.login({
       email: values.email,
       password: values.password,
     });
+
     console.log(res);
-    console.log(userStore);
   };
 
   return (
@@ -87,7 +87,7 @@ export const Login = observer(({}) => {
               Forgot password?
             </Anchor>
           </Group>
-          <Button fullWidth mt="xl">
+          <Button fullWidth mt="xl" type="submit">
             Sign in
           </Button>
         </Paper>

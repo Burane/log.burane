@@ -82,7 +82,9 @@ export class Api {
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response);
-      if (problem) return problem;
+      if (problem) {
+        return { result: response.data, temporary: true, kind: problem.kind };
+      }
     }
 
     try {

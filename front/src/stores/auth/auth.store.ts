@@ -39,6 +39,7 @@ export const AuthStoreModel = types
         self.setStatus('error');
         self.setAuthenticated(false);
       }
+      return response;
     }),
 
     logout: flow(function* () {
