@@ -12,6 +12,7 @@ import { observer } from 'mobx-react-lite';
 import { Role } from './types';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { Layout } from './components/Layout';
+import { PageNotFound } from './pages/PageNotFound';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -35,9 +36,9 @@ export const App = observer(({}) => {
     <StoreProvider value={rootStore}>
       <BrowserRouter>
         <Routes>
-          {/*<Route element={<Layout />}>*/}
-          <Route path="/" element={<Layout />} />
-          {/*</Route>*/}
+          <Route element={<Layout />}>
+            <Route path="/" element={<HelloWorld />} />
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Login />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
@@ -47,6 +48,7 @@ export const App = observer(({}) => {
           >
             <Route path="/dashboard" element={<Auth />} />
           </Route>
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>
     </StoreProvider>

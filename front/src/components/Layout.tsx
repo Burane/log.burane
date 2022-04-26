@@ -17,11 +17,11 @@ import {
   Home2,
   Icon as TablerIcon,
   Logout,
-  Outlet,
   Settings,
   SwitchHorizontal,
   User,
 } from 'tabler-icons-react';
+import { Outlet } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
   link: {
