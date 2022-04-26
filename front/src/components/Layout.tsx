@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   AppShell,
+  Avatar,
   Center,
   createStyles,
   Group,
@@ -108,7 +109,7 @@ export const Layout = () => {
   const CustomNavBar = () => {
     return (
       <Navbar width={{ base: 80 }} p="md">
-        <Center>{/*<MantineLogoSmall />*/}</Center>
+        <Center>{<Avatar radius="xl" />}</Center>
         <Navbar.Section grow mt={50}>
           <Group direction="column" align="center" spacing={0}>
             {links}
