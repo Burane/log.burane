@@ -56,6 +56,8 @@ export const AuthStoreModel = types
         self.setStatus('error');
         self.setAuthenticated(false);
       }
+
+      return response;
     }),
 
     forgotPassword: flow(function* () {

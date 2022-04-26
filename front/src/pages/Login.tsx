@@ -36,13 +36,10 @@ export const Login = observer(({}) => {
   type FormValues = typeof form.values;
 
   const handleSubmit = async (values: FormValues) => {
-    console.log(values);
     let res = await authStore.login({
       email: values.email,
       password: values.password,
     });
-
-    console.log(res);
   };
 
   return (

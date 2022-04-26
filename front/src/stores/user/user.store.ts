@@ -10,8 +10,8 @@ export const UserStoreModel = types
     id: types.optional(types.string, ''),
     email: types.optional(types.string, ''),
     role: types.optional(types.string, ''),
-    createdAt: types.optional(types.string, ''),
-    updatedAt: types.optional(types.string, ''),
+    createdAt: types.optional(types.Date, new Date()),
+    updatedAt: types.optional(types.Date, new Date()),
   })
   .actions((self) => ({
     saveUser: (newUser: User) => {
@@ -26,8 +26,8 @@ export const UserStoreModel = types
       self.id = '';
       self.email = '';
       self.role = '';
-      self.createdAt = '';
-      self.updatedAt = '';
+      self.createdAt = new Date();
+      self.updatedAt = new Date();
     },
   }))
   .actions((self) => ({

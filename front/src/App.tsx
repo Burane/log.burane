@@ -36,17 +36,25 @@ export const App = observer(({}) => {
     <StoreProvider value={rootStore}>
       <BrowserRouter>
         <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<HelloWorld />} />
+          <Route
+            element={
+              <RequireAuth
+                isAllowed={!authStore.isAuthenticated}
+                redirectPath="/dashboard"
+              />
+            }
+          >
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Login />} />
+            <Route path="/forgotPassword" element={<ForgotPassword />} />
           </Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Login />} />
-          <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<Login />} />
           <Route
             element={<RequireAuth isAllowed={authStore.isAuthenticated} />}
           >
-            <Route path="/dashboard" element={<Auth />} />
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Auth />} />
+            </Route>
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>

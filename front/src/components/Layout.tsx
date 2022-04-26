@@ -21,7 +21,8 @@ import {
   SwitchHorizontal,
   User,
 } from 'tabler-icons-react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useStore } from '../providers/StoreProvider';
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -60,6 +61,7 @@ interface NavbarLinkProps {
   icon: TablerIcon;
   label: string;
   active?: boolean;
+
   onClick?(): void;
 }
 
@@ -91,6 +93,8 @@ const mockdata = [
 export const Layout = () => {
   const [active, setActive] = useState(2);
   const theme = useMantineTheme();
+  const { authStore } = useStore();
+  const navigate = useNavigate();
 
   const links = mockdata.map((link, index) => (
     <NavbarLink
@@ -113,7 +117,15 @@ export const Layout = () => {
         <Navbar.Section>
           <Group direction="column" align="center" spacing={0}>
             <NavbarLink icon={SwitchHorizontal} label="Change account" />
-            <NavbarLink icon={Logout} label="Logout" />
+            <NavbarLink
+              icon={Logout}
+              label="Logout"
+              onClick={async () => {
+                console.log('logout');
+                await authStore.logout();
+                navigate('/login');
+              }}
+            />
           </Group>
         </Navbar.Section>
       </Navbar>

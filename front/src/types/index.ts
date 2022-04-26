@@ -2,8 +2,8 @@ export type User = {
   id: string;
   email: string;
   role: Role;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type UserWithAccessToken = {

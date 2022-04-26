@@ -99,12 +99,14 @@ export class Api {
     }
   }
 
-  async logout(): Promise<LogoutResult> {
+  async logout(): Promise<Types.LogoutResult> {
     const response: ApiResponse<any> = await this.apisauce.get('/auth/logout');
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response);
-      if (problem) return problem;
+      if (problem) {
+        return { temporary: true, kind: problem.kind };
+      }
     }
 
     localStorage.removeItem('accessToken');
