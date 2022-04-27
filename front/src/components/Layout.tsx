@@ -92,7 +92,7 @@ const mockdata = [
 ];
 
 export const Layout = () => {
-  const [active, setActive] = useState(2);
+  const [active, setActive] = useState(0);
   const theme = useMantineTheme();
   const { authStore } = useStore();
   const navigate = useNavigate();
