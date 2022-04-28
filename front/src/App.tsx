@@ -6,7 +6,6 @@ import { RootStoreModel } from './stores/root.store';
 import { setupRootStore } from './stores/store.persistence';
 import { Center, Loader } from '@mantine/core';
 import { RequireAuth } from './components/RequireAuth';
-import { Auth } from './components/Auth';
 import { observer } from 'mobx-react-lite';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { Layout } from './components/Layout';
@@ -14,6 +13,8 @@ import { PageNotFound } from './pages/PageNotFound';
 import { ResetPassword } from './pages/ResetPassword';
 import { Register } from './pages/Register';
 import { Account } from './pages/Account';
+import { Security } from './pages/Security';
+import { Dashboard } from './pages/Dashbard';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -60,8 +61,9 @@ export const App = observer(({}) => {
             element={<RequireAuth isAllowed={authStore.isAuthenticated} />}
           >
             <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Auth />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/security" element={<Security />} />
             </Route>
           </Route>
           <Route path="*" element={<PageNotFound />} />

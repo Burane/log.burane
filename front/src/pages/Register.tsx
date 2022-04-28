@@ -12,7 +12,6 @@ import {
   Title,
 } from '@mantine/core';
 import { z } from 'zod';
-import { useStore } from '../providers/StoreProvider';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { Api } from '../services/api/api';

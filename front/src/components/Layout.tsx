@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AppShell,
   Avatar,
@@ -11,18 +11,14 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import {
-  CalendarStats,
-  DeviceDesktopAnalytics,
   Fingerprint,
   Gauge,
-  Home2,
   Icon,
   Logout,
-  Settings,
   SwitchHorizontal,
   User,
 } from 'tabler-icons-react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../providers/StoreProvider';
 
 const useStyles = createStyles((theme) => ({
@@ -83,26 +79,25 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
 
 const navBarLinks: { icon: Icon; label: string; navigate: string }[] = [
   { icon: Gauge, label: 'Dashboard', navigate: '/dashboard' },
-  { icon: DeviceDesktopAnalytics, label: 'Analytics', navigate: '/dashboard' },
-  { icon: CalendarStats, label: 'Releases', navigate: '/dashboard' },
+  // { icon: DeviceDesktopAnalytics, label: 'Analytics', navigate: '/dashboard' },
+  // { icon: CalendarStats, label: 'Releases', navigate: '/dashboard' },
   { icon: User, label: 'Account', navigate: '/account' },
-  { icon: Fingerprint, label: 'Security', navigate: '/dashboard' },
-  { icon: Settings, label: 'Settings', navigate: '/dashboard' },
+  { icon: Fingerprint, label: 'Security', navigate: '/security' },
+  // { icon: Settings, label: 'Settings', navigate: '/dashboard' },
 ];
 
 export const Layout = () => {
-  const [active, setActive] = useState(0);
   const theme = useMantineTheme();
   const { authStore } = useStore();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
-  const links = navBarLinks.map((link, index) => (
+  const links = navBarLinks.map((link) => (
     <NavbarLink
       {...link}
       key={link.label}
-      active={index === active}
+      active={pathname === link.navigate}
       onClick={() => {
-        setActive(index);
         navigate(link.navigate);
       }}
     />
