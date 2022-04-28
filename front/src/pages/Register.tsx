@@ -15,31 +15,38 @@ import { z } from 'zod';
 import { useStore } from '../providers/StoreProvider';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
+import { Api } from '../services/api/api';
 
-export const Login = observer(({}) => {
+export const Register = observer(({}) => {
   const navigate = useNavigate();
 
   const schema = z.object({
     email: z.string().email({ message: 'Invalid email' }),
     password: z.string(),
+    passwordConfirmation: z.string(),
   });
 
   const form = useForm({
     schema: zodResolver(schema),
     initialValues: {
       email: 'superadmin@test.com',
-      password: '123456',
+      password: 'Test1234',
+      passwordConfirmation: 'Test1234',
     },
   });
 
-  const { authStore, userStore } = useStore();
   type FormValues = typeof form.values;
 
   const handleSubmit = async (values: FormValues) => {
-    let res = await authStore.login({
+    const api = new Api();
+    let res = await api.register({
       email: values.email,
       password: values.password,
+      passwordConfirmation: values.passwordConfirmation,
     });
+    if (res.kind === 'ok') {
+      navigate('/login');
+    }
   };
 
   return (
@@ -52,12 +59,12 @@ export const Login = observer(({}) => {
             fontWeight: 900,
           })}
         >
-          Welcome back !
+          Welcome !
         </Title>
         <Text color="dimmed" size="sm" align="center" mt={5}>
-          Do not have an account yet ?{' '}
-          <Anchor<'a'> href="#" size="sm" onClick={() => navigate('/signup')}>
-            Create account
+          Already have an account ?{' '}
+          <Anchor<'a'> size="sm" onClick={() => navigate('/login')}>
+            Login
           </Anchor>
         </Text>
 
@@ -74,6 +81,13 @@ export const Login = observer(({}) => {
             required
             mt="md"
             {...form.getInputProps('password')}
+          />
+          <PasswordInput
+            label="Password confirmation"
+            placeholder="Confirm your password"
+            required
+            mt="md"
+            {...form.getInputProps('passwordConfirmation')}
           />
           <Group position="apart" mt="md">
             <Anchor<'a'> onClick={() => navigate('/forgotPassword')} size="sm">

@@ -12,6 +12,7 @@ import { ForgotPassword } from './pages/ForgotPassword';
 import { Layout } from './components/Layout';
 import { PageNotFound } from './pages/PageNotFound';
 import { ResetPassword } from './pages/ResetPassword';
+import { Register } from './pages/Register';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -45,7 +46,7 @@ export const App = observer(({}) => {
           >
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Login />} />
+            <Route path="/signup" element={<Register />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
           </Route>
           <Route path="/resetPassword" element={<ResetPassword />} />

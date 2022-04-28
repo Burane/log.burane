@@ -6,7 +6,7 @@ import { roleArray } from '../../utils/types/role.array';
 import { Trim } from '../../utils/decorator/trim.decorator';
 import { PASSWORD_REGEX } from '../../constants';
 
-export class CreateUserDto {
+export class  CreateUserDto {
   @ApiProperty()
   @IsEmail()
   @Trim()

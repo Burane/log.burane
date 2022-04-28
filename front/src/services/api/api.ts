@@ -112,7 +112,32 @@ export class Api {
     return { kind: 'ok' };
   }
 
-  async forgotPassword(email: string): Promise<ForgotPwdResult> {
+  async register({
+    password,
+    passwordConfirmation,
+    email,
+  }: {
+    password: string;
+    passwordConfirmation: string;
+    email: string;
+  }): Promise<Types.NoResult> {
+    const response: ApiResponse<any> = await this.apisauce.post(
+      '/auth/register',
+      { password, passwordConfirmation, email },
+    );
+    localStorage.removeItem('accessToken');
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response);
+      if (problem) {
+        return { temporary: true, kind: problem.kind };
+      }
+    }
+
+    return { kind: 'ok' };
+  }
+
+  async forgotPassword({ email }: { email: string }): Promise<ForgotPwdResult> {
     const response: ApiResponse<any> = await this.apisauce.post(
       '/auth/forgotPassword',
       { email },
