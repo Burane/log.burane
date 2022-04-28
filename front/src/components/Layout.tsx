@@ -16,7 +16,7 @@ import {
   Fingerprint,
   Gauge,
   Home2,
-  Icon as TablerIcon,
+  Icon,
   Logout,
   Settings,
   SwitchHorizontal,
@@ -59,7 +59,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface NavbarLinkProps {
-  icon: TablerIcon;
+  icon: Icon;
   label: string;
   active?: boolean;
 
@@ -81,14 +81,13 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
   );
 }
 
-const mockdata = [
-  { icon: Home2, label: 'Home' },
-  { icon: Gauge, label: 'Dashboard' },
-  { icon: DeviceDesktopAnalytics, label: 'Analytics' },
-  { icon: CalendarStats, label: 'Releases' },
-  { icon: User, label: 'Account' },
-  { icon: Fingerprint, label: 'Security' },
-  { icon: Settings, label: 'Settings' },
+const navBarLinks: { icon: Icon; label: string; navigate: string }[] = [
+  { icon: Gauge, label: 'Dashboard', navigate: '/dashboard' },
+  { icon: DeviceDesktopAnalytics, label: 'Analytics', navigate: '/dashboard' },
+  { icon: CalendarStats, label: 'Releases', navigate: '/dashboard' },
+  { icon: User, label: 'Account', navigate: '/account' },
+  { icon: Fingerprint, label: 'Security', navigate: '/dashboard' },
+  { icon: Settings, label: 'Settings', navigate: '/dashboard' },
 ];
 
 export const Layout = () => {
@@ -97,12 +96,15 @@ export const Layout = () => {
   const { authStore } = useStore();
   const navigate = useNavigate();
 
-  const links = mockdata.map((link, index) => (
+  const links = navBarLinks.map((link, index) => (
     <NavbarLink
       {...link}
       key={link.label}
       active={index === active}
-      onClick={() => setActive(index)}
+      onClick={() => {
+        setActive(index);
+        navigate(link.navigate);
+      }}
     />
   ));
 

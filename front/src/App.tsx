@@ -13,6 +13,7 @@ import { Layout } from './components/Layout';
 import { PageNotFound } from './pages/PageNotFound';
 import { ResetPassword } from './pages/ResetPassword';
 import { Register } from './pages/Register';
+import { Account } from './pages/Account';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -36,6 +37,7 @@ export const App = observer(({}) => {
     <StoreProvider value={rootStore}>
       <BrowserRouter>
         <Routes>
+          {/* non auth exclusive routes */}
           <Route
             element={
               <RequireAuth
@@ -49,12 +51,17 @@ export const App = observer(({}) => {
             <Route path="/signup" element={<Register />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
           </Route>
+
+          {/* no restriction routes */}
           <Route path="/resetPassword" element={<ResetPassword />} />
+
+          {/* auth exclusive routes */}
           <Route
             element={<RequireAuth isAllowed={authStore.isAuthenticated} />}
           >
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Auth />} />
+              <Route path="/account" element={<Account />} />
             </Route>
           </Route>
           <Route path="*" element={<PageNotFound />} />

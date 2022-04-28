@@ -28,7 +28,7 @@ export const Login = observer(({}) => {
     schema: zodResolver(schema),
     initialValues: {
       email: 'superadmin@test.com',
-      password: '123456',
+      password: 'Test1234',
     },
   });
 
