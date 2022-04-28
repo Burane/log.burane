@@ -66,12 +66,12 @@ export class AuthController {
   }
 
   @Post('resetPassword')
-  resetPassword(
+  async resetPassword(
     @Body() { password, token }: ResetPasswordDto,
     @Res({ passthrough: true }) res,
   ) {
     res.clearCookie('refreshToken');
-    return this.authService.resetPassword(password, token);
+    return new UserEntity(await this.authService.resetPassword(password, token));
   }
 
   @UseGuards(RefreshTokenGuard)
