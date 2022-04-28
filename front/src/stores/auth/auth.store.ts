@@ -48,6 +48,7 @@ export const AuthStoreModel = types
       const authAPI = new Api();
       const response: LogoutResult = yield authAPI.logout();
 
+      console.log('response', response);
       if (response.kind === 'ok') {
         self.setStatus('done');
         self.setAuthenticated(false);
@@ -55,6 +56,7 @@ export const AuthStoreModel = types
       } else {
         self.setStatus('error');
         self.setAuthenticated(false);
+        self.rootStore.userStore.resetUser();
       }
 
       return response;

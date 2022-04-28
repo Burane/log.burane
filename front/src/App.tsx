@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { HelloWorld } from './components/HelloWorld';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { StoreProvider } from './providers/StoreProvider';
 import { RootStoreModel } from './stores/root.store';
@@ -9,10 +8,10 @@ import { Center, Loader } from '@mantine/core';
 import { RequireAuth } from './components/RequireAuth';
 import { Auth } from './components/Auth';
 import { observer } from 'mobx-react-lite';
-import { Role } from './types';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { Layout } from './components/Layout';
 import { PageNotFound } from './pages/PageNotFound';
+import { ResetPassword } from './pages/ResetPassword';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -44,11 +43,12 @@ export const App = observer(({}) => {
               />
             }
           >
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Login />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
           </Route>
-          <Route path="/reset-password" element={<Login />} />
+          <Route path="/resetPassword" element={<ResetPassword />} />
           <Route
             element={<RequireAuth isAllowed={authStore.isAuthenticated} />}
           >

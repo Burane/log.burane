@@ -5,7 +5,6 @@ import * as Types from './api.types';
 import {
   ForgotPwdResult,
   GetUserResult,
-  LogoutResult,
   RefreshTokenResult,
 } from './api.types';
 import { Credentials, User, UserWithAccessToken } from '../../types';
@@ -100,7 +99,8 @@ export class Api {
   }
 
   async logout(): Promise<Types.LogoutResult> {
-    const response: ApiResponse<any> = await this.apisauce.get('/auth/logout');
+    const response: ApiResponse<any> = await this.apisauce.post('/auth/logout');
+    localStorage.removeItem('accessToken');
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response);
@@ -108,8 +108,6 @@ export class Api {
         return { temporary: true, kind: problem.kind };
       }
     }
-
-    localStorage.removeItem('accessToken');
 
     return { kind: 'ok' };
   }
@@ -146,6 +144,34 @@ export class Api {
       };
       localStorage.setItem('accessToken', resultUser.accessToken);
       return { kind: 'ok', result: resultUser };
+    } catch {
+      return { kind: 'bad-data' };
+    }
+  }
+
+  async resetPassword({
+    password,
+    passwordConfirmation,
+    token,
+  }: {
+    password: string;
+    passwordConfirmation: string;
+    token: string;
+  }): Promise<GetUserResult> {
+    const response: ApiResponse<any> = await this.apisauce.post(
+      `/auth/resetPassword`,
+      { password, passwordConfirmation, token },
+    );
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response);
+      if (problem) {
+        return { temporary: true, kind: problem.kind, user: response.data };
+      }
+    }
+
+    try {
+      const resultUser: User = response.data;
+      return { kind: 'ok', user: resultUser };
     } catch {
       return { kind: 'bad-data' };
     }
