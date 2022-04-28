@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsString, Matches, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, Matches, MinLength } from 'class-validator';
 import { Match } from '../../utils/decorator/match.decorator';
 import { Role } from '@prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -29,6 +29,7 @@ export class  CreateUserDto {
   passwordConfirmation: string;
 
   @ApiPropertyOptional({ enum: roleArray })
+  @IsOptional()
   @IsEnum(Role, { message: 'Role is not valid' })
   role?: Role;
 }
