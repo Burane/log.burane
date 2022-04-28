@@ -2,6 +2,7 @@ import React from 'react';
 import {
   AppShell,
   Avatar,
+  Button,
   Center,
   createStyles,
   Group,
@@ -66,14 +67,20 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
   const { classes, cx } = useStyles();
 
   return (
-    <Tooltip label={label} position="right" withArrow transitionDuration={0}>
-      <UnstyledButton
-        onClick={onClick}
-        className={cx(classes.link, { [classes.active]: active })}
-      >
-        <Icon />
-      </UnstyledButton>
-    </Tooltip>
+    // <Tooltip
+    //   label={label}
+    //   position="bottom"
+    //   placement="center"
+    //   withArrow
+    //   transitionDuration={0}
+    // >
+    <UnstyledButton
+      onClick={onClick}
+      className={cx(classes.link, { [classes.active]: active })}
+    >
+      <Icon />
+    </UnstyledButton>
+    // </Tooltip>
   );
 }
 
@@ -101,11 +108,12 @@ export const Layout = () => {
         navigate(link.navigate);
       }}
     />
+    // <Button onClick={() => navigate(link.navigate)}></Button>
   ));
 
   const CustomNavBar = () => {
     return (
-      <Navbar width={{ base: 80 }} p="md">
+      <Navbar width={{ base: 90 }} p="md">
         <Center>{<Avatar radius="xl" />}</Center>
         <Navbar.Section grow mt={50}>
           <Group direction="column" align="center" spacing={0}>
