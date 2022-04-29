@@ -2,13 +2,12 @@ import React from 'react';
 import {
   AppShell,
   Avatar,
-  Button,
   Center,
   createStyles,
   Group,
   Navbar,
-  Tooltip,
   UnstyledButton,
+  useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
 import {
@@ -16,44 +15,50 @@ import {
   Gauge,
   Icon,
   Logout,
-  SwitchHorizontal,
+  Moon,
+  Sun,
   User,
 } from 'tabler-icons-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../providers/StoreProvider';
 
-const useStyles = createStyles((theme) => ({
-  link: {
-    width: 50,
-    height: 50,
-    borderRadius: theme.radius.md,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color:
-      theme.colorScheme === 'dark'
-        ? theme.colors.dark[0]
-        : theme.colors.gray[7],
-
-    '&:hover': {
-      backgroundColor:
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[5]
-          : theme.colors.gray[0],
-    },
-  },
-
-  active: {
-    '&, &:hover': {
-      backgroundColor:
-        theme.colorScheme === 'dark'
-          ? theme.fn.rgba(theme.colors[theme.primaryColor][9], 0.25)
-          : theme.colors[theme.primaryColor][0],
+const useStyles = createStyles((theme) => {
+  console.log(theme);
+  return {
+    link: {
+      width: 50,
+      height: 50,
+      borderRadius: theme.radius.md,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       color:
-        theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 7],
+        theme.colorScheme === 'dark'
+          ? theme.colors.dark[0]
+          : theme.colors.gray[7],
+
+      '&:hover': {
+        backgroundColor:
+          theme.colorScheme === 'dark'
+            ? theme.colors.dark[5]
+            : theme.colors.gray[0],
+      },
     },
-  },
-}));
+
+    active: {
+      '&, &:hover': {
+        backgroundColor:
+          theme.colorScheme === 'dark'
+            ? theme.fn.rgba(theme.colors[theme.primaryColor][9], 0.25)
+            : theme.colors[theme.primaryColor][0],
+        color:
+          theme.colors[theme.primaryColor][
+            theme.colorScheme === 'dark' ? 4 : 7
+          ],
+      },
+    },
+  };
+});
 
 interface NavbarLinkProps {
   icon: Icon;
@@ -98,6 +103,8 @@ export const Layout = () => {
   const { authStore } = useStore();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const light = colorScheme === 'light';
 
   const links = navBarLinks.map((link) => (
     <NavbarLink
@@ -122,7 +129,11 @@ export const Layout = () => {
         </Navbar.Section>
         <Navbar.Section>
           <Group direction="column" align="center" spacing={0}>
-            <NavbarLink icon={SwitchHorizontal} label="Change account" />
+            <NavbarLink
+              icon={!light ? Sun : Moon}
+              onClick={() => toggleColorScheme()}
+              label="colorsheme"
+            />
             <NavbarLink
               icon={Logout}
               label="Logout"
