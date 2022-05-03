@@ -48,6 +48,7 @@ export class Api {
       // @ts-ignore
       this.apisauce.axiosInstance,
       async (failedRequest: any) => {
+        console.log('test');
         const refreshTokenResult = await this.refreshToken();
         if (refreshTokenResult.kind === 'ok') {
           localStorage.setItem(

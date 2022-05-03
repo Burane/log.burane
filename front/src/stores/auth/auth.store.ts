@@ -22,6 +22,9 @@ export const AuthStoreModel = types
     setAuthenticated(value: boolean) {
       self.isAuthenticated = value;
     },
+    reset() {
+      self.isAuthenticated = false;
+    },
   }))
   .actions((self) => ({
     login: flow(function* (credentials: Credentials) {
@@ -49,15 +52,7 @@ export const AuthStoreModel = types
       const response: LogoutResult = yield authAPI.logout();
 
       console.log('response', response);
-      if (response.kind === 'ok') {
-        self.setStatus('done');
-        self.setAuthenticated(false);
-        self.rootStore.userStore.resetUser();
-      } else {
-        self.setStatus('error');
-        self.setAuthenticated(false);
-        self.rootStore.userStore.resetUser();
-      }
+      self.rootStore.reset();
 
       return response;
     }),

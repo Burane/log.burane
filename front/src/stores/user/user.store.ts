@@ -22,7 +22,7 @@ export const UserStoreModel = types
       self.updatedAt = newUser.updatedAt;
     },
 
-    resetUser: () => {
+    reset: () => {
       self.id = '';
       self.email = '';
       self.role = '';
