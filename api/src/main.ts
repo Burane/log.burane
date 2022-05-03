@@ -7,15 +7,15 @@ import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin: true,
-      credentials: true,
-      exposedHeaders: ['*', 'Authorization'],
-    },
-  });
+  const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api/v1');
+
+  app.enableCors({
+    credentials: true,
+    /* allow cors from anywhere */
+    origin: /.*/gm
+  })
 
   app.use(cookieParser());
 
@@ -40,4 +40,5 @@ async function bootstrap() {
 
   await app.listen(process.env.APP_PORT ?? 3000);
 }
+
 bootstrap();

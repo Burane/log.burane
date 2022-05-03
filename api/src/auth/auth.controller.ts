@@ -40,7 +40,7 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       expires: getRefreshTokenExpiration(),
-      secure: process.env.NODE_ENV === 'development',
+      secure: process.env.NODE_ENV !== 'development',
       sameSite: 'none',
     });
 
@@ -88,7 +88,7 @@ export class AuthController {
     res.cookie('refreshToken', tokens.newRefreshToken, {
       httpOnly: true,
       expires: getRefreshTokenExpiration(),
-      secure: process.env.NODE_ENV === 'development',
+      secure: process.env.NODE_ENV !== 'development',
       sameSite: 'none',
     });
 
