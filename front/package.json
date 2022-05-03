@@ -18,7 +18,7 @@
     "@mantine/prism": "^4.1.4",
     "apisauce": "^2.1.5",
     "axios": "^0.26.1",
-    "axios-auth-refresh": "^3.2.2",
+    "axios-auth-refresh-shouldrefresh": "https://github.com/Flyrell/axios-auth-refresh#8df8bf54ec2888cc09b931707888f72462387dc6",
     "dayjs": "^1.11.1",
     "mobx": "^6.5.0",
     "mobx-react-lite": "^3.3.0",

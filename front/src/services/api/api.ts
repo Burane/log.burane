@@ -8,7 +8,7 @@ import {
   RefreshTokenResult,
 } from './api.types';
 import { Credentials, User, UserWithAccessToken } from '../../types';
-import createAuthRefreshInterceptor from 'axios-auth-refresh';
+import createAuthRefreshInterceptor from 'axios-auth-refresh-shouldrefresh/src';
 
 /**
  * Manages all requests to the API.
@@ -61,7 +61,7 @@ export class Api {
         }
       },
       {
-        shouldRefresh: (error: any) =>
+        shouldRefresh: (error) =>
           error?.response?.data?.message === 'jwt expired',
       },
     );
