@@ -40,8 +40,8 @@ export const UserStoreModel = types
     },
   }));
 
-export type UserType = Instance<typeof UserStoreModel>;
-export interface User extends UserType {}
+export type UserStoreType = Instance<typeof UserStoreModel>;
+export interface UserStore extends UserStoreType {}
 export type UserSnapshotType = SnapshotOut<typeof UserStoreModel>;
 export interface UserSnapshot extends UserSnapshotType {}
 export const createUserDefaultModel = () => types.optional(UserStoreModel, {});

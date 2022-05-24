@@ -68,7 +68,7 @@ export const App = observer(({}) => {
     })();
   }, [isReady]);
 
-  if (!rootStore) {
+  if (!rootStore || !isReady) {
     return (
       <Center style={{ height: '100vh' }}>
         <Loader color="grape" size="xl" variant="bars" />

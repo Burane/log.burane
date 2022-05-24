@@ -5,12 +5,7 @@ import { Api } from '../../services/api/api';
 
 import { withRootStore } from '../extensions/with-root-store';
 import { Credentials } from '../../types';
-import {
-  LoginResult,
-  LogoutResult,
-  Result,
-  User,
-} from '../../services/api/api.types';
+import { EmptyObject, Result, User } from '../../services/api/api.types';
 
 /**
  * Model description here for TypeScript hints.
@@ -57,11 +52,12 @@ export const AuthStoreModel = types
       self.setStatus('pending');
 
       const authAPI = new Api();
-      const response: LogoutResult = yield authAPI.logout();
+      const response: Result<EmptyObject> = yield authAPI.logout();
 
-      console.log('response', response);
       self.rootStore.reset();
+      localStorage.removeItem('accessToken');
 
+      self.setStatus('done');
       return response;
     }),
 
