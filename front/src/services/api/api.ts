@@ -1,14 +1,14 @@
-import { ApiResponse, ApisauceInstance, create } from 'apisauce';
-import { getGeneralApiProblem } from './api.problem';
+import { ApiProblem } from './api.problem';
 import { ApiConfig, DEFAULT_API_CONFIG } from './api.config';
-import * as Types from './api.types';
 import {
-  ForgotPwdResult,
-  GetUserResult,
-  RefreshTokenResult,
+  Credentials,
+  EmptyObject,
+  Result,
+  User,
+  UserWithAccessToken,
 } from './api.types';
-import { Credentials, User, UserWithAccessToken } from '../../types';
-import createAuthRefreshInterceptor from 'axios-auth-refresh-shouldrefresh/src';
+import axios, { AxiosError, AxiosInstance } from 'axios';
+import createAuthRefreshInterceptor from 'axios-auth-refresh/src';
 
 /**
  * Manages all requests to the API.
@@ -17,7 +17,7 @@ export class Api {
   /**
    * The underlying apisauce instance which performs the requests.
    */
-  apisauce!: ApisauceInstance;
+  axios!: AxiosInstance;
 
   /**
    * Configurable options.
@@ -35,7 +35,8 @@ export class Api {
   }
 
   setup() {
-    this.apisauce = create({
+    // construct the axios instance
+    this.axios = axios.create({
       baseURL: this.config.url,
       timeout: this.config.timeout,
       headers: {
@@ -45,72 +46,77 @@ export class Api {
     });
 
     createAuthRefreshInterceptor(
-      // @ts-ignore
-      this.apisauce.axiosInstance,
+      this.axios,
       async (failedRequest: any) => {
-        console.log('test');
         const refreshTokenResult = await this.refreshToken();
-        if (refreshTokenResult.kind === 'ok') {
-          localStorage.setItem(
-            'accessToken',
-            refreshTokenResult.result.accessToken,
-          );
-          failedRequest.response.config.headers['Authorization'] =
-            'Bearer ' + refreshTokenResult.result.accessToken;
+        if (refreshTokenResult.ok) {
+          failedRequest.response.config.headers.Authorization =
+            'Bearer ' + (await this.getAccessToken());
         } else {
-          await this.logout();
+          // TODO: unable to refresh token
         }
       },
       {
-        shouldRefresh: (error) =>
+        shouldRefresh: (error: AxiosError<ApiProblem>) =>
           error?.response?.data?.message === 'jwt expired',
       },
     );
 
-    this.apisauce.addRequestTransform((request) => {
+    this.axios.interceptors.request.use((request) => {
       const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) return;
+      if (!accessToken || !request.headers) return request;
       request.headers.Authorization = `Bearer ${accessToken}`;
+      return request;
     });
   }
 
-  async login(credentials: Credentials): Promise<Types.LoginResult> {
-    const response: ApiResponse<any> = await this.apisauce.post(
-      '/auth/login',
-      credentials,
-    );
+  getAccessToken() {
+    return localStorage.getItem('accessToken');
+  }
 
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response);
-      if (problem) {
-        return { result: response.data, temporary: true, kind: problem.kind };
-      }
-    }
-
+  async login(credentials: Credentials): Promise<Result<User>> {
     try {
-      const resultUser: UserWithAccessToken = {
-        accessToken: response.data.accessToken,
-        user: response.data.user,
-      };
-      localStorage.setItem('accessToken', resultUser.accessToken);
-      return { kind: 'ok', result: resultUser };
-    } catch {
-      return { kind: 'bad-data' };
+      const response = await this.axios.post<UserWithAccessToken>(
+        '/auth/login',
+        credentials,
+      );
+      const { accessToken, user } = response.data;
+      localStorage.setItem('accessToken', accessToken);
+      return { ok: true, data: user };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
     }
   }
 
-  async logout(): Promise<Types.LogoutResult> {
-    const response: ApiResponse<any> = await this.apisauce.post('/auth/logout');
-    localStorage.removeItem('accessToken');
-
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response);
-      if (problem) {
-        return { temporary: true, kind: problem.kind };
+  async logout(): Promise<Result<EmptyObject>> {
+    try {
+      await this.axios.get<EmptyObject>('/auth/logout');
+      return { ok: true, data: {} };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
       }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
     }
-
-    return { kind: 'ok' };
   }
 
   async register({
@@ -121,57 +127,77 @@ export class Api {
     password: string;
     passwordConfirmation: string;
     email: string;
-  }): Promise<Types.NoResult> {
-    const response: ApiResponse<any> = await this.apisauce.post(
-      '/auth/register',
-      { password, passwordConfirmation, email },
-    );
-    localStorage.removeItem('accessToken');
-
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response);
-      if (problem) {
-        return { temporary: true, kind: problem.kind };
-      }
-    }
-
-    return { kind: 'ok' };
-  }
-
-  async forgotPassword({ email }: { email: string }): Promise<ForgotPwdResult> {
-    const response: ApiResponse<any> = await this.apisauce.post(
-      '/auth/forgotPassword',
-      { email },
-    );
-
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response);
-      if (problem) return problem;
-    }
-
-    return { kind: 'ok' };
-  }
-
-  async refreshToken(): Promise<RefreshTokenResult> {
-    const response: ApiResponse<any> = await this.apisauce.get(
-      '/auth/refreshToken',
-      {},
-    );
-
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response);
-      if (problem) return problem;
-    }
-
+  }): Promise<Result<EmptyObject>> {
     try {
-      const resultUser: UserWithAccessToken = {
-        accessToken: response.data.accessToken,
-        user: response.data.user,
-      };
-      localStorage.setItem('accessToken', resultUser.accessToken);
-      return { kind: 'ok', result: resultUser };
-    } catch {
-      return { kind: 'bad-data' };
+      await this.axios.post<EmptyObject>('/auth/register', {
+        password,
+        passwordConfirmation,
+        email,
+      });
+      localStorage.removeItem('accessToken');
+      return { ok: true, data: {} };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
+    }
+  }
+
+  async forgotPassword({
+    email,
+  }: {
+    email: string;
+  }): Promise<Result<EmptyObject>> {
+    try {
+      await this.axios.post<EmptyObject>('/auth/forgotPassword', { email });
+
+      return { ok: true, data: {} };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
+    }
+  }
+
+  async refreshToken(): Promise<Result<User>> {
+    try {
+      const response = await this.axios.get<UserWithAccessToken>(
+        '/auth/refreshToken',
+      );
+      const { accessToken, user } = response.data;
+      await localStorage.setItem('accessToken', accessToken);
+      return { ok: true, data: user };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
     }
   }
 
@@ -183,38 +209,48 @@ export class Api {
     password: string;
     passwordConfirmation: string;
     token: string;
-  }): Promise<GetUserResult> {
-    const response: ApiResponse<any> = await this.apisauce.post(
-      `/auth/resetPassword`,
-      { password, passwordConfirmation, token },
-    );
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response);
-      if (problem) {
-        return { temporary: true, kind: problem.kind, user: response.data };
-      }
-    }
-
+  }): Promise<Result<User>> {
     try {
-      const resultUser: User = response.data;
-      return { kind: 'ok', user: resultUser };
-    } catch {
-      return { kind: 'bad-data' };
+      const response = await this.axios.post<User>(`/auth/resetPassword`, {
+        password,
+        passwordConfirmation,
+        token,
+      });
+      return { ok: true, data: response.data };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
     }
   }
 
-  async getMySelf(): Promise<GetUserResult> {
-    const response: ApiResponse<any> = await this.apisauce.get(`/auth/me`);
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response);
-      if (problem) return problem;
-    }
-
+  async getMySelf(): Promise<Result<User>> {
     try {
-      const resultUser: User = response.data;
-      return { kind: 'ok', user: resultUser };
-    } catch {
-      return { kind: 'bad-data' };
+      const response = await this.axios.get<User>(`/auth/me`);
+      const { data: user } = response;
+      return { ok: true, data: user };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
     }
   }
 }

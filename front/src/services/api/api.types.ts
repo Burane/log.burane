@@ -1,15 +1,35 @@
-import { GeneralApiProblem } from './api.problem';
-import { User, UserWithAccessToken } from '../../types';
+import { ApiProblem } from './api.problem';
 
-export type LoginResult =
-  | { kind: 'ok'; result: UserWithAccessToken }
-  | GeneralApiProblem;
-export type RefreshTokenResult =
-  | { kind: 'ok'; result: UserWithAccessToken }
-  | GeneralApiProblem;
-export type LogoutResult = { kind: 'ok' } | GeneralApiProblem;
-export type ForgotPwdResult = { kind: 'ok' } | GeneralApiProblem;
-export type NoResult = { kind: 'ok' } | GeneralApiProblem;
+export type User = {
+  id: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
-export type GetUsersResult = { kind: 'ok'; users: User[] } | GeneralApiProblem;
-export type GetUserResult = { kind: 'ok'; user: User } | GeneralApiProblem;
+export type UserWithAccessToken = {
+  accessToken: string;
+  user: User;
+};
+
+export interface Credentials {
+  email: string;
+  password: string;
+}
+
+export type EmptyObject = {
+  [K in any]: never;
+};
+
+export type ResultOk<T> = {
+  ok: true;
+  data: T;
+};
+
+export type ResultError = {
+  ok: false;
+  data: ApiProblem;
+};
+
+export type Result<T> = ResultOk<T> | ResultError;
