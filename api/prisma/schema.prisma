@@ -17,12 +17,39 @@ enum Role {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String        @id @default(cuid())
+  email        String        @unique
   password     String
   username     String
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   refreshToken String?
+  applications Application[]
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  FATAL
+}
+
+model Application {
+  id          String       @id @default(cuid())
+  name        String
+  description String
+  logMessages LogMessage[]
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model LogMessage {
+  id            String      @id @default(cuid())
+  level         LogLevel
+  date          DateTime
+  message       String
+  application   Application @relation(fields: [applicationId], references: [id])
+  applicationId String
 }

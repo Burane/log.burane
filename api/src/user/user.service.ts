@@ -37,6 +37,7 @@ export class UserService {
         email,
         password: await bcrypt.hash(password, 10),
         role,
+        username
       },
     });
   }

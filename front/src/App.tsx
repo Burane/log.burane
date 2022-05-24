@@ -76,7 +76,7 @@ export const App = observer(({}) => {
     );
   }
 
-  const { userStore, authStore } = rootStore;
+  const { authStore } = rootStore;
   return (
     <ColorSchemeProvider
       colorScheme={colorScheme}

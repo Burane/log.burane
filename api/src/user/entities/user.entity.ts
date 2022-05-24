@@ -9,8 +9,12 @@ export class UserEntity implements User {
     this.email = user.email;
     this.role = user.role;
     this.createdAt = user.createdAt;
+    this.username = user.username
     this.updatedAt = user.updatedAt;
   }
+
+  @ApiProperty()
+  username: string;
 
   @ApiHideProperty()
   @Exclude()
