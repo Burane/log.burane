@@ -24,10 +24,13 @@ export class UserService {
   ) {
   }
 
-  async create(email, password, role: Role = Role.USER) {
+  async create(email: string, password: string, role: Role = Role.USER, username: string = null) {
     const user = await this.getByEmail(email);
 
     if (user) throw new ConflictException('User already exist');
+
+    if(!username)
+      username = email.split("@")[0]
 
     return await this.prisma.user.create({
       data: {

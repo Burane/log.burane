@@ -8,8 +8,8 @@ import {
   Post,
   Query,
   Req,
-  Res,
-  UseGuards,
+  Res, UploadedFile,
+  UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
@@ -29,6 +29,8 @@ import { UserEntity } from './entities/user.entity';
 import { getRefreshTokenExpiration } from 'src/utils';
 import { PaginationQuery, PaginationResponse } from '../utils/types/pagination';
 import { users } from '../../prisma/seed/users';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Multer } from 'multer';
 
 @UseGuards(JwtGuard)
 @Controller('users')
@@ -39,8 +41,8 @@ export class UserController {
   @UseGuards(CanCUDUserGuard)
   @Post('create')
   @ApiCreatedResponse({ type: UserEntity })
-  async create(@Body() { email, password, role }: CreateUserDto) {
-    const user = await this.userService.create(email, password, role);
+  async create(@Body() { email, password, role, username }: CreateUserDto) {
+    const user = await this.userService.create(email, password, role, username);
     return new UserEntity(user);
   }
 
@@ -110,5 +112,14 @@ export class UserController {
   @ApiOkResponse({ type: UserEntity })
   async remove(@Param('id') id: string) {
     return new UserEntity(await this.userService.removeById(id));
+  }
+
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file', {
+
+  }))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+
   }
 }

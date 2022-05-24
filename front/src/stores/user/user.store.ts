@@ -1,20 +1,18 @@
 import { Instance, SnapshotOut, types } from 'mobx-state-tree';
-import { User } from '../../types';
 
-/**
- * Model description here for TypeScript hints.
- */
+export const roleArray = ['USER', 'ADMIN', 'SUPERADMIN'];
+
 export const UserStoreModel = types
   .model('UserStore')
   .props({
     id: types.optional(types.string, ''),
     email: types.optional(types.string, ''),
-    role: types.optional(types.string, ''),
-    createdAt: types.optional(types.Date, new Date()),
-    updatedAt: types.optional(types.Date, new Date()),
+    role: types.optional(types.enumeration(roleArray), 'USER'),
+    createdAt: types.optional(types.string, ''),
+    updatedAt: types.optional(types.string, ''),
   })
   .actions((self) => ({
-    saveUser: (newUser: User) => {
+    saveUser: (newUser: UserSnapshot): void => {
       self.id = newUser.id;
       self.email = newUser.email;
       self.role = newUser.role;
@@ -26,12 +24,12 @@ export const UserStoreModel = types
       self.id = '';
       self.email = '';
       self.role = '';
-      self.createdAt = new Date();
-      self.updatedAt = new Date();
+      self.createdAt = '';
+      self.updatedAt = '';
     },
   }))
   .actions((self) => ({
-    getUser: (): User => {
+    getUser: (): UserSnapshot => {
       return {
         id: self.id,
         email: self.email,
@@ -42,9 +40,8 @@ export const UserStoreModel = types
     },
   }));
 
-type UserStoreType = Instance<typeof UserStoreModel>;
-export interface UserStore extends UserStoreType {}
-type UserStoreSnapshotType = SnapshotOut<typeof UserStoreModel>;
-export interface UserStoreSnapshot extends UserStoreSnapshotType {}
-export const createUserStoreDefaultModel = () =>
-  types.optional(UserStoreModel, {});
+export type UserType = Instance<typeof UserStoreModel>;
+export interface User extends UserType {}
+export type UserSnapshotType = SnapshotOut<typeof UserStoreModel>;
+export interface UserSnapshot extends UserSnapshotType {}
+export const createUserDefaultModel = () => types.optional(UserStoreModel, {});

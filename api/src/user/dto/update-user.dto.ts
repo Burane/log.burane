@@ -38,6 +38,12 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty()
   @IsString()
   @MaxLength(255)
+  @Trim()
+  username?: string;
+
+  @ApiProperty()
+  @IsString()
+  @MaxLength(255)
   @MinLength(8, {
     groups: ['updatePassword'],
   })

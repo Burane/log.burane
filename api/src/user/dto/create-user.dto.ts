@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsOptional, IsString, Matches, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { Match } from '../../utils/decorator/match.decorator';
 import { Role } from '@prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -10,7 +10,14 @@ export class  CreateUserDto {
   @ApiProperty()
   @IsEmail()
   @Trim()
+  @MaxLength(255)
   email: string;
+
+  @ApiProperty()
+  @IsString()
+  @MaxLength(255)
+  @Trim()
+  username?: string;
 
   @ApiProperty()
   @IsString()

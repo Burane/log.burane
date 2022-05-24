@@ -22,6 +22,7 @@ import { Account } from './pages/Account';
 import { Security } from './pages/Security';
 import { Dashboard } from './pages/Dashbard';
 import { useLocalStorage } from '@mantine/hooks';
+import { Api } from './services/api/api';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -31,12 +32,41 @@ export const App = observer(({}) => {
     key: 'color-scheme',
     defaultValue: 'dark',
   });
+  const [isReady, setIsReady] = useState(false);
+
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
   useEffect(() => {
     setRootStore(setupRootStore());
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (rootStore) {
+        const authApi = new Api();
+
+        const refreshResult = await authApi.refreshToken();
+
+        if (refreshResult.ok) {
+          rootStore.userStore.saveUser(refreshResult.data);
+        }
+
+        if (!refreshResult.ok) {
+          rootStore.reset();
+        }
+        setIsReady(true);
+      }
+    })();
+  }, [rootStore]);
+
+  useEffect(() => {
+    (async () => {
+      if (isReady && rootStore?.authStore?.isAuthenticated) {
+        await rootStore.fetchAllStore();
+      }
+    })();
+  }, [isReady]);
 
   if (!rootStore) {
     return (

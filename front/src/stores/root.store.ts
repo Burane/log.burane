@@ -25,6 +25,16 @@ export const RootStore = types
           item.reset();
       });
     },
+    fetchAllStore() {
+      Object.values(self).forEach((item) => {
+        if (
+          item &&
+          Object.prototype.hasOwnProperty.call(item, 'fetchData') &&
+          isFunction(item.fetchData)
+        )
+          item.fetchData();
+      });
+    },
   }));
 
 /**

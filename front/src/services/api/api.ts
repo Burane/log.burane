@@ -1,14 +1,9 @@
 import { ApiProblem } from './api.problem';
 import { ApiConfig, DEFAULT_API_CONFIG } from './api.config';
-import {
-  Credentials,
-  EmptyObject,
-  Result,
-  User,
-  UserWithAccessToken,
-} from './api.types';
+import { Credentials, EmptyObject, Result } from './api.types';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh/src';
+import { UserSnapshot } from '../../stores/user/user.store';
 
 /**
  * Manages all requests to the API.
@@ -74,13 +69,12 @@ export class Api {
     return localStorage.getItem('accessToken');
   }
 
-  async login(credentials: Credentials): Promise<Result<User>> {
+  async login(credentials: Credentials): Promise<Result<UserSnapshot>> {
     try {
-      const response = await this.axios.post<UserWithAccessToken>(
-        '/auth/login',
-        credentials,
-      );
-      const { accessToken, user } = response.data;
+      const response = await this.axios.post<
+        UserSnapshot & { accessToken: string }
+      >('/auth/login', credentials);
+      const { accessToken, ...user } = response.data;
       localStorage.setItem('accessToken', accessToken);
       return { ok: true, data: user };
     } catch (e) {
@@ -177,12 +171,12 @@ export class Api {
     }
   }
 
-  async refreshToken(): Promise<Result<User>> {
+  async refreshToken(): Promise<Result<UserSnapshot>> {
     try {
-      const response = await this.axios.get<UserWithAccessToken>(
-        '/auth/refreshToken',
-      );
-      const { accessToken, user } = response.data;
+      const response = await this.axios.get<
+        UserSnapshot & { accessToken: string }
+      >('/auth/refreshToken');
+      const { accessToken, ...user } = response.data;
       await localStorage.setItem('accessToken', accessToken);
       return { ok: true, data: user };
     } catch (e) {
@@ -209,13 +203,16 @@ export class Api {
     password: string;
     passwordConfirmation: string;
     token: string;
-  }): Promise<Result<User>> {
+  }): Promise<Result<UserSnapshot>> {
     try {
-      const response = await this.axios.post<User>(`/auth/resetPassword`, {
-        password,
-        passwordConfirmation,
-        token,
-      });
+      const response = await this.axios.post<UserSnapshot>(
+        `/auth/resetPassword`,
+        {
+          password,
+          passwordConfirmation,
+          token,
+        },
+      );
       return { ok: true, data: response.data };
     } catch (e) {
       if (axios.isAxiosError(e) && e.response) {
@@ -233,9 +230,9 @@ export class Api {
     }
   }
 
-  async getMySelf(): Promise<Result<User>> {
+  async getMySelf(): Promise<Result<UserSnapshot>> {
     try {
-      const response = await this.axios.get<User>(`/auth/me`);
+      const response = await this.axios.get<UserSnapshot>(`/auth/me`);
       const { data: user } = response;
       return { ok: true, data: user };
     } catch (e) {
