@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } f
 import { ApplicationService } from './application.service';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
-import { CanCUDUserGuard } from '../user/guards/canCUDUser.guard';
 import { CreateAppDto } from './dto/create-app.dto';
 import { AppEntity } from './entities/app.entity';
 import { GetUser } from '../auth/decorators/get.user.decorator';
@@ -74,7 +73,6 @@ export class ApplicationController {
     return new AppEntity(updatedUser);
   }
 
-  @UseGuards(CanCUDUserGuard)
   @Delete(':id')
   @ApiOkResponse({ type: AppEntity })
   async remove(@Param('id') id: string, @GetUser() user: User) {
