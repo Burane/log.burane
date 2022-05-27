@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { Order, Sort } from '../utils/types/pagination';
+import * as util from 'util';
 
 @Injectable()
 export class ApplicationService {
@@ -15,11 +16,19 @@ export class ApplicationService {
   }
 
 
-  async getAll(pageSize: number, pageIndex: number, search: string, sort: Sort[], user: User) {
+  async getAll(pageSize = 15, pageIndex = 0, search: string, sort: Sort[], user: User) {
     const parameters: Prisma.ApplicationFindManyArgs = {
+      // const parameters: Prisma.ApplicationAggregateArgs = {
       skip: pageIndex * pageSize,
       take: pageSize,
       where: { userId: user.id },
+      include: {
+        _count: {
+          select: {
+            logMessages : true
+          }
+        }
+      }
     };
 
     if (sort) {
@@ -54,7 +63,18 @@ export class ApplicationService {
     }
 
 
-    const applications = await this.prisma.application.findMany(parameters);
+    const applications = await Promise.all((await this.prisma.application.findMany(parameters)).map(async a => {
+        const count = await this.prisma.logMessage.groupBy({
+          by: ['level'],
+          _count: true,
+          where: {
+            applicationId:a.id,
+          },
+        });
+        return { ...a, logMessagesCount : [...count] };
+
+      }),
+    );
 
     const countParamsNoSearch: Prisma.ApplicationCountArgs = {};
     const countParamsSearch: Prisma.ApplicationCountArgs = { where: parameters.where };

@@ -5,7 +5,7 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagge
 import { CreateAppDto } from './dto/create-app.dto';
 import { AppEntity } from './entities/app.entity';
 import { GetUser } from '../auth/decorators/get.user.decorator';
-import { User } from '@prisma/client';
+import { Application, LogLevel, User } from '@prisma/client';
 import { PaginationQuery, PaginationResponse } from '../utils/types/pagination';
 import { UpdateAppDto } from './dto/update-app.dto';
 
@@ -41,8 +41,8 @@ export class ApplicationController {
       isNextPage,
     } = await this.appService.getAll(pageSize, pageIndex, search, sort, user);
 
-    const response: PaginationResponse<AppEntity> = {
-      results: applications.map((u) => new AppEntity(u)),
+    const response: PaginationResponse<typeof applications[0]> = {
+      results: applications,
       pagination: {
         totalSize,
         pageCount,
