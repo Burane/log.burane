@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, User } from '@prisma/client';
+import { Application, Prisma, User } from '@prisma/client';
 import { Order, Sort } from '../utils/types/pagination';
-import * as util from 'util';
 
 @Injectable()
 export class ApplicationService {
@@ -12,23 +11,33 @@ export class ApplicationService {
   }
 
   async create(name: string, description: string, user: User) {
-    return await this.prisma.application.create({ data: { description, name, userId: user.id } });
+    const app = await this.prisma.application.create({
+      data: { description, name, userId: user.id },
+      include: {
+        _count: {
+          select: {
+            logMessages: true,
+          },
+        },
+      },
+    });
+    const count = await this.prisma.logMessage.groupBy({
+      by: ['level'],
+      _count: true,
+      where: {
+        applicationId: app.id,
+      },
+    });
+    return { ...app, logMessagesCount: [...count] };
+
   }
 
 
   async getAll(pageSize = 15, pageIndex = 0, search: string, sort: Sort[], user: User) {
     const parameters: Prisma.ApplicationFindManyArgs = {
-      // const parameters: Prisma.ApplicationAggregateArgs = {
       skip: pageIndex * pageSize,
       take: pageSize,
       where: { userId: user.id },
-      include: {
-        _count: {
-          select: {
-            logMessages : true
-          }
-        }
-      }
     };
 
     if (sort) {
@@ -62,16 +71,23 @@ export class ApplicationService {
       ];
     }
 
-
-    const applications = await Promise.all((await this.prisma.application.findMany(parameters)).map(async a => {
+    const applications = await Promise.all((await this.prisma.application.findMany({
+        ...parameters, include: {
+          _count: {
+            select: {
+              logMessages: true,
+            },
+          },
+        },
+      })).map(async app => {
         const count = await this.prisma.logMessage.groupBy({
           by: ['level'],
           _count: true,
           where: {
-            applicationId:a.id,
+            applicationId: app.id,
           },
         });
-        return { ...a, logMessagesCount : [...count] };
+        return { ...app, logMessagesCount: [...count] };
 
       }),
     );
@@ -96,17 +112,66 @@ export class ApplicationService {
   }
 
   async getById(id: string, user: User) {
-    return await this.prisma.application.findUnique({ where: { appUserId: { userId: user.id, id } } });
+    const app = await this.prisma.application.findUnique({
+      where: { appUserId: { userId: user.id, id } },
+      include: {
+        _count: {
+          select: {
+            logMessages: true,
+          },
+        },
+      },
+    });
+    const count = await this.prisma.logMessage.groupBy({
+      by: ['level'],
+      _count: true,
+      where: {
+        applicationId: app.id,
+      },
+    });
+    return { ...app, logMessagesCount: [...count] };
   }
 
   async updateById(id: string, user: User, name: string, description: string) {
-    return await this.prisma.application.update({
+    const app = await this.prisma.application.update({
       where: { appUserId: { id, userId: user.id } },
       data: { name: name, description: description },
+      include: {
+        _count: {
+          select: {
+            logMessages: true,
+          },
+        },
+      },
     });
+    const count = await this.prisma.logMessage.groupBy({
+      by: ['level'],
+      _count: true,
+      where: {
+        applicationId: app.id,
+      },
+    });
+    return { ...app, logMessagesCount: [...count] };
   }
 
   async removeById(id: string, user: User) {
-    return await this.prisma.application.delete({ where: { appUserId: { id, userId: user.id } } });
+    const app = await this.prisma.application.delete({
+      where: { appUserId: { id, userId: user.id } },
+      include: {
+        _count: {
+          select: {
+            logMessages: true,
+          },
+        },
+      },
+    });
+    const count = await this.prisma.logMessage.groupBy({
+      by: ['level'],
+      _count: true,
+      where: {
+        applicationId: app.id,
+      },
+    });
+    return { ...app, logMessagesCount: [...count] };
   }
 }

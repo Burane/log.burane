@@ -5,9 +5,10 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagge
 import { CreateAppDto } from './dto/create-app.dto';
 import { AppEntity } from './entities/app.entity';
 import { GetUser } from '../auth/decorators/get.user.decorator';
-import { Application, LogLevel, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { PaginationQuery, PaginationResponse } from '../utils/types/pagination';
 import { UpdateAppDto } from './dto/update-app.dto';
+import { appWithStats } from '../utils/types/AppWithStats';
 
 @UseGuards(JwtGuard)
 @Controller('applications')
@@ -41,8 +42,8 @@ export class ApplicationController {
       isNextPage,
     } = await this.appService.getAll(pageSize, pageIndex, search, sort, user);
 
-    const response: PaginationResponse<typeof applications[0]> = {
-      results: applications,
+    const response: PaginationResponse<appWithStats> = {
+      results: applications.map(app => new AppEntity(app)),
       pagination: {
         totalSize,
         pageCount,
@@ -68,9 +69,7 @@ export class ApplicationController {
     @Body() { name, description }: UpdateAppDto,
     @GetUser() user: User,
   ) {
-    const updatedUser = await this.appService.updateById(id, user, name, description);
-
-    return new AppEntity(updatedUser);
+    return await this.appService.updateById(id, user, name, description);
   }
 
   @Delete(':id')
