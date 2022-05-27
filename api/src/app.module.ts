@@ -9,6 +9,7 @@ import { CanCUDUserGuard } from './user/guards/canCUDUser.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
 import * as path from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { ApplicationModule } from './application/application.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         },
       },
     }),
+    ApplicationModule,
   ],
   controllers: [AppController],
   providers: [AppService, CanCUDUserGuard],

@@ -30,7 +30,6 @@ import { getRefreshTokenExpiration } from 'src/utils';
 import { PaginationQuery, PaginationResponse } from '../utils/types/pagination';
 import { users } from '../../prisma/seed/users';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Multer } from 'multer';
 
 @UseGuards(JwtGuard)
 @Controller('users')

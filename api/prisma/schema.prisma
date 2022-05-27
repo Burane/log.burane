@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -43,6 +44,7 @@ model Application {
   logMessages LogMessage[]
   user        User         @relation(fields: [userId], references: [id])
   userId      String
+  @@unique(fields: [id, userId], name: "appUserId")
 }
 
 model LogMessage {
@@ -52,4 +54,5 @@ model LogMessage {
   message       String
   application   Application @relation(fields: [applicationId], references: [id])
   applicationId String
+    @@unique(fields: [id, applicationId], name: "logAppId")
 }
