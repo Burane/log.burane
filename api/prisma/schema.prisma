@@ -42,7 +42,7 @@ model Application {
   name        String
   description String
   logMessages LogMessage[]
-  user        User         @relation(fields: [userId], references: [id])
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   @@unique(fields: [id, userId], name: "appUserId")
 }
@@ -52,7 +52,7 @@ model LogMessage {
   level         LogLevel
   date          DateTime
   message       String
-  application   Application @relation(fields: [applicationId], references: [id])
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String
     @@unique(fields: [id, applicationId], name: "logAppId")
 }
