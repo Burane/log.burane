@@ -83,7 +83,7 @@ export const App = observer(({}) => {
       toggleColorScheme={toggleColorScheme}
     >
       <MantineProvider
-        theme={{ colorScheme }}
+        theme={{ colorScheme, primaryColor: 'violet', defaultRadius: 'lg' }}
         withGlobalStyles
         withNormalizeCSS
       >
