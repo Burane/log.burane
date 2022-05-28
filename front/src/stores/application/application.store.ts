@@ -52,7 +52,7 @@ export const ApplicationStoreModel = types
     },
   }))
   .actions((self) => ({
-    fetch: flow(function* (paginationQuery?: PaginationQueryType) {
+    fetchData: flow(function* (paginationQuery?: PaginationQueryType) {
       self.isLoading = true;
       if (!paginationQuery) {
         paginationQuery = self.paginationQuery;
@@ -87,7 +87,7 @@ export const ApplicationStoreModel = types
   .actions((self) => ({
     setPaginationQuery: (paginationQuery: PaginationQueryType) => {
       self.paginationQuery = paginationQuery;
-      self.fetch();
+      self.fetchData();
     },
     setShouldResetApplications: (shouldResetProduct: boolean) => {
       self.shouldResetProduct = shouldResetProduct;

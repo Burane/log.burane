@@ -2,12 +2,21 @@ import React from 'react';
 import { Button, Container, Title } from '@mantine/core';
 import { Api } from '../services/api/api';
 import { AppCard } from '../components/AppCard';
+import { useStore } from '../providers/StoreProvider';
 
 export const Dashboard = ({}) => {
   function getMe() {
     const api = new Api();
     api.getMySelf();
   }
+
+  const { authStore } = useStore();
+
+  useEffect(() => {
+    return () => {
+      effect;
+    };
+  });
 
   return (
     <Container>
