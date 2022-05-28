@@ -9,9 +9,6 @@ import { UserSnapshot } from '../../stores/user/user.store';
  * Manages all requests to the API.
  */
 export class Api {
-  /**
-   * The underlying apisauce instance which performs the requests.
-   */
   axios!: AxiosInstance;
 
   /**
