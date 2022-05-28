@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import {
   ActionIcon,
   Box,
+  Button,
   createStyles,
   Group,
   Paper,
+  Popover,
   Progress,
   SimpleGrid,
   Text,
-  Popover,
-  Button,
-  Center,
 } from '@mantine/core';
-import { DeviceAnalytics, Settings, Trash } from 'tabler-icons-react';
+import { Settings, Trash } from 'tabler-icons-react';
 import {
   ApplicationSnapshotType,
   LogLevel,

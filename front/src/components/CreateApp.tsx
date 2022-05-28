@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import {
   Button,
   Group,
@@ -11,10 +11,14 @@ import {
 import { z } from 'zod';
 import { useForm, zodResolver } from '@mantine/form';
 import { useStore } from '../providers/StoreProvider';
-import { showNotification } from '@mantine/notifications';
+import { NotificationProps, showNotification } from '@mantine/notifications';
 import { Check, Cross, X } from 'tabler-icons-react';
 
-export const CreateApp = ({}) => {
+export const CreateApp = ({
+  setDrawerState,
+}: {
+  setDrawerState: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [loading, setLoading] = useState(false);
   const { appStore } = useStore();
 
@@ -42,6 +46,9 @@ export const CreateApp = ({}) => {
         message: 'Application created',
         color: 'green',
         icon: <Check />,
+        onClose(props: NotificationProps) {
+          setDrawerState(false);
+        },
       });
     } else {
       showNotification({

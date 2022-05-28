@@ -88,7 +88,7 @@ export const App = observer(({}) => {
         withGlobalStyles
         withNormalizeCSS
       >
-        <NotificationsProvider autoClose={4000}>
+        <NotificationsProvider autoClose={2500}>
           <StoreProvider value={rootStore}>
             <BrowserRouter>
               <Routes>

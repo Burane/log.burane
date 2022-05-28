@@ -91,7 +91,7 @@ export const Dashboard = observer(({}) => {
         size="xl"
         position="right"
       >
-        <CreateApp />
+        <CreateApp setDrawerState={setOpened} />
       </Drawer>
     </Container>
   );
