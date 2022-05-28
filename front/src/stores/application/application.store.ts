@@ -1,4 +1,4 @@
-import { flow, Instance, SnapshotOut, types } from 'mobx-state-tree';
+import { cast, flow, Instance, SnapshotOut, types } from 'mobx-state-tree';
 import { withEnvironment } from '../extensions/with-environment';
 import { withRootStore } from '../extensions/with-root-store';
 import { PaginationResponse } from '../../types/PaginationType';
@@ -23,7 +23,7 @@ const defaultPagination: PaginationType = {
 const defaultPaginationQuery: PaginationQueryType = {
   pagination: { pageIndex: 0, pageSize: 2 },
   search: undefined,
-  sort: undefined,
+  sort: cast([{ sortBy: 'name', orderBy: 'asc' }]),
 };
 
 let timeout: NodeJS.Timeout;
