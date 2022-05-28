@@ -11,8 +11,8 @@ export type RootStoreEnv = {
 
 export const RootStore = types
   .model('RootStore', {
-    userStore: UserStoreModel,
-    authStore: AuthStoreModel,
+    userStore: types.optional(UserStoreModel, {} as any),
+    authStore: types.optional(AuthStoreModel, {} as any),
   })
   .actions((self) => ({
     reset() {
