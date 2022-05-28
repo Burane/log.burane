@@ -14,9 +14,7 @@ import { observer } from 'mobx-react-lite';
 import { ModifyAccount } from '../components/ModifyAccount';
 
 export const Account = observer(({}) => {
-  const {
-    userStore: { email, role },
-  } = useStore();
+  const { userStore } = useStore();
   const [opened, setOpened] = useState(false);
 
   return (
@@ -51,10 +49,10 @@ export const Account = observer(({}) => {
         </Button>
         <Avatar src={null} size={120} radius={120} mx="auto" />
         <Text align="center" size="lg" weight={500} mt="md">
-          {email}
+          {userStore.email}
         </Text>
         <Text align="center" color="dimmed" size="sm">
-          {role}
+          {userStore.role}
         </Text>
       </Paper>
     </Container>

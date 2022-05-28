@@ -5,7 +5,8 @@ import { Api } from '../../services/api/api';
 
 import { withRootStore } from '../extensions/with-root-store';
 import { Credentials } from '../../types';
-import { EmptyObject, Result, User } from '../../services/api/api.types';
+import { EmptyObject, Result } from '../../services/api/api.types';
+import { UserSnapshot } from '../user/user.store';
 
 /**
  * Model description here for TypeScript hints.
@@ -32,7 +33,7 @@ export const AuthStoreModel = types
 
       const authAPI = new Api();
 
-      const response: Result<User> = yield authAPI.login(credentials);
+      const response: Result<UserSnapshot> = yield authAPI.login(credentials);
 
       if (response.ok) {
         self.setStatus('done');

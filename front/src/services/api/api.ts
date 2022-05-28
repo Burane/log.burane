@@ -69,9 +69,9 @@ export class Api {
   async login(credentials: Credentials): Promise<Result<UserSnapshot>> {
     try {
       const response = await this.axios.post<
-        UserSnapshot & { accessToken: string }
+        { user: UserSnapshot } & { accessToken: string }
       >('/auth/login', credentials);
-      const { accessToken, ...user } = response.data;
+      const { accessToken, user } = response.data;
       localStorage.setItem('accessToken', accessToken);
       return { ok: true, data: user };
     } catch (e) {
