@@ -150,6 +150,7 @@ export const Layout = () => {
 
   return (
     <AppShell
+      fixed
       styles={{
         main: {
           background:
