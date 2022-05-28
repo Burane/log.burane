@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  ActionIcon,
   Box,
   createStyles,
   Group,
@@ -7,8 +8,11 @@ import {
   Progress,
   SimpleGrid,
   Text,
+  Popover,
+  Button,
+  Center,
 } from '@mantine/core';
-import { DeviceAnalytics } from 'tabler-icons-react';
+import { DeviceAnalytics, Settings, Trash } from 'tabler-icons-react';
 import {
   ApplicationSnapshotType,
   LogLevel,
@@ -36,13 +40,6 @@ const useStyles = createStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
   },
-
-  icon: {
-    color:
-      theme.colorScheme === 'dark'
-        ? theme.colors.dark[3]
-        : theme.colors.gray[4],
-  },
 }));
 
 export const AppCard = ({
@@ -51,6 +48,7 @@ export const AppCard = ({
   application: ApplicationSnapshotType;
 }) => {
   const { classes } = useStyles();
+  const [deletePopoverOpened, setDeletePopoverOpened] = useState(false);
 
   function getColorForLogLevel(logLevel: LogLevel | string) {
     switch (logLevel) {
@@ -109,7 +107,43 @@ export const AppCard = ({
             {application.name}
           </Text>
         </Group>
-        <DeviceAnalytics size={20} className={classes.icon} />
+        <Group>
+          <Settings size={20} />
+          <Popover
+            withArrow
+            radius="lg"
+            opened={deletePopoverOpened}
+            position="bottom"
+            closeOnEscape={true}
+            onClose={() => setDeletePopoverOpened(false)}
+            title={
+              <Text align="center" weight={700}>
+                Delete application
+              </Text>
+            }
+            width={300}
+            target={
+              <ActionIcon
+                color="red"
+                variant="transparent"
+                onClick={() => setDeletePopoverOpened((b) => !b)}
+              >
+                <Trash size={20} />
+              </ActionIcon>
+            }
+          >
+            <Text>This action is irreversible</Text>
+            <Group position="center" mt={30}>
+              <Button
+                variant="outline"
+                onClick={() => setDeletePopoverOpened(false)}
+              >
+                Cancel
+              </Button>
+              <Button color="red">Delete</Button>
+            </Group>
+          </Popover>
+        </Group>
       </Group>
 
       <Text color="dimmed" size="sm">
