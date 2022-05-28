@@ -14,8 +14,8 @@ async function bootstrap() {
   app.enableCors({
     credentials: true,
     /* allow cors from anywhere */
-    origin: /.*/gm
-  })
+    origin: /.*/gm,
+  });
 
   app.use(cookieParser());
 
@@ -29,10 +29,10 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   const config = new DocumentBuilder()
-    .setTitle('AB Restauration API')
-    .setDescription('AB Restauration API')
-    .setVersion('1.0')
-    .addTag('AB Restauration API')
+    .setTitle(process.env.npm_package_name)
+    .setDescription(process.env.npm_package_name)
+    .setVersion(process.env.npm_package_version)
+    .addTag(process.env.npm_package_name)
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
