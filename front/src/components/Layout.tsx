@@ -23,7 +23,6 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../providers/StoreProvider';
 
 const useStyles = createStyles((theme) => {
-  console.log(theme);
   return {
     link: {
       width: 50,

@@ -24,7 +24,7 @@ export const Dashboard = observer(({}) => {
       </Title>
       <Button onClick={getMe}>get me</Button>
       {appStore.applications.map((app) => (
-        <AppCard application={app} />
+        <AppCard key={app.id} application={app} />
       ))}
     </Container>
   );

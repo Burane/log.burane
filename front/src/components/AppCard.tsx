@@ -94,15 +94,15 @@ export const AppCard = ({
         {application.description}
       </Text>
 
-      <Text size="xl" weight={700}>
-        {application._count.logMessages}
+      <Text size="xl" weight={700} mt={20}>
+        {application._count.logMessages} logs
       </Text>
 
       <Progress
         sections={segments}
         size={34}
         classNames={{ label: classes.progressLabel }}
-        mt={40}
+        mt={20}
       />
       <SimpleGrid cols={3} breakpoints={[{ maxWidth: 'xs', cols: 1 }]} mt="xl">
         {descriptions}
