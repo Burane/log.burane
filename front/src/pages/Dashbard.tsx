@@ -26,6 +26,7 @@ export const Dashboard = observer(({}) => {
           size="lg"
           radius="lg"
           withEdges
+          mt={20}
           page={appStore.pagination.pageIndex + 1}
           onChange={(page) => {
             appStore.fetchPage(page - 1);
