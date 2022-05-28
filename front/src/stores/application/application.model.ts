@@ -1,6 +1,15 @@
 import { Instance, SnapshotOut, types } from 'mobx-state-tree';
 
 export const logLevelArray = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
+export const logLevelArrayAsConst = [
+  'DEBUG',
+  'INFO',
+  'WARN',
+  'ERROR',
+  'FATAL',
+] as const;
+
+export type LogLevel = typeof logLevelArrayAsConst[number];
 
 export const logMessagesCountModel = types.model('LogMessagesCount').props({
   _count: types.number,

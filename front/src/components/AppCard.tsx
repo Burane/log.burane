@@ -9,7 +9,10 @@ import {
   Text,
 } from '@mantine/core';
 import { DeviceAnalytics } from 'tabler-icons-react';
-import { ApplicationSnapshotType } from '../stores/application/application.model';
+import {
+  ApplicationSnapshotType,
+  LogLevel,
+} from '../stores/application/application.model';
 
 const useStyles = createStyles((theme) => ({
   progressLabel: {
@@ -49,16 +52,33 @@ export const AppCard = ({
 }) => {
   const { classes } = useStyles();
 
+  function getColorForLogLevel(logLevel: LogLevel | string) {
+    switch (logLevel) {
+      case 'DEBUG':
+        return '#2E8BC0';
+      case 'INFO':
+        return '#a9d171';
+      case 'WARN':
+        return '#ff9f40';
+      case 'ERROR':
+        return '#d63727';
+      case 'FATAL':
+        return '#800080';
+      default:
+        return '#808080';
+    }
+  }
+
   const segments = application.logMessagesCount.map((segment) => ({
-    value: segment._count,
-    color: '#47d6ab',
+    value: (segment._count / application._count.logMessages) * 100,
+    color: getColorForLogLevel(segment.level),
     label: segment.level,
   }));
 
   const descriptions = application.logMessagesCount.map((stat) => (
     <Box
       key={stat.level}
-      sx={{ borderBottomColor: '#47d6ab' }}
+      sx={{ borderBottomColor: getColorForLogLevel(stat.level) }}
       className={classes.stat}
     >
       <Text transform="uppercase" size="xs" color="dimmed" weight={700}>
@@ -66,14 +86,16 @@ export const AppCard = ({
       </Text>
 
       <Group position="apart" align="flex-end" spacing={0}>
-        <Text weight={700}>{stat._count}</Text>
+        <Text weight={700} color={getColorForLogLevel(stat.level)}>
+          {stat._count}
+        </Text>
         <Text
-          color={'#47d6ab'}
+          color={getColorForLogLevel(stat.level)}
           weight={700}
           size="sm"
           className={classes.statCount}
         >
-          {(stat._count / application._count.logMessages) * 100}%
+          {((stat._count / application._count.logMessages) * 100).toFixed(2)}%
         </Text>
       </Group>
     </Box>
