@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import {
+  ActionIcon,
   Button,
   Center,
   Container,
@@ -14,7 +15,7 @@ import {
 import { AppCard } from '../components/AppCard';
 import { useStore } from '../providers/StoreProvider';
 import { observer } from 'mobx-react-lite';
-import { AlertCircle, Search } from 'tabler-icons-react';
+import { Adjustments, AlertCircle, Plus, Search } from 'tabler-icons-react';
 
 export const Dashboard = observer(({}) => {
   const { appStore } = useStore();
@@ -52,7 +53,11 @@ export const Dashboard = observer(({}) => {
           />
         </Grid.Col>
         <Grid.Col span={2}>
-          <Button radius="lg">test</Button>
+          <Tooltip label="Create an application">
+            <ActionIcon color="violet" size="lg" radius="xl" variant="filled">
+              <Plus />
+            </ActionIcon>
+          </Tooltip>
         </Grid.Col>
       </Grid>
 
