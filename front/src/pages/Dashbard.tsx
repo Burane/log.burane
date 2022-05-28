@@ -1,22 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Container, Title } from '@mantine/core';
 import { Api } from '../services/api/api';
 import { AppCard } from '../components/AppCard';
 import { useStore } from '../providers/StoreProvider';
+import { observer } from 'mobx-react-lite';
 
-export const Dashboard = ({}) => {
+export const Dashboard = observer(({}) => {
   function getMe() {
     const api = new Api();
     api.getMySelf();
   }
 
-  const { authStore } = useStore();
+  const { appStore } = useStore();
 
   useEffect(() => {
-    return () => {
-      effect;
-    };
-  });
+    appStore.fetchData();
+  }, []);
 
   return (
     <Container>
@@ -24,75 +23,9 @@ export const Dashboard = ({}) => {
         Dashboard
       </Title>
       <Button onClick={getMe}>get me</Button>
-      <AppCard
-        total={345.765}
-        data={[
-          {
-            label: 'Mobile',
-            count: '204,001',
-            part: 59,
-            color: '#47d6ab',
-          },
-          {
-            label: 'Desktop',
-            count: '121,017',
-            part: 35,
-            color: '#03141a',
-          },
-          {
-            label: 'Tablet',
-            count: '31,118',
-            part: 6,
-            color: '#4fcdf7',
-          },
-        ]}
-      />
-      <AppCard
-        total={345.765}
-        data={[
-          {
-            label: 'Mobile',
-            count: '204,001',
-            part: 59,
-            color: '#47d6ab',
-          },
-          {
-            label: 'Desktop',
-            count: '121,017',
-            part: 35,
-            color: '#03141a',
-          },
-          {
-            label: 'Tablet',
-            count: '31,118',
-            part: 6,
-            color: '#4fcdf7',
-          },
-        ]}
-      />
-      <AppCard
-        total={345.765}
-        data={[
-          {
-            label: 'Mobile',
-            count: '204,001',
-            part: 59,
-            color: '#47d6ab',
-          },
-          {
-            label: 'Desktop',
-            count: '121,017',
-            part: 35,
-            color: '#03141a',
-          },
-          {
-            label: 'Tablet',
-            count: '31,118',
-            part: 6,
-            color: '#4fcdf7',
-          },
-        ]}
-      />
+      {appStore.applications.map((app) => (
+        <AppCard application={app} />
+      ))}
     </Container>
   );
-};
+});

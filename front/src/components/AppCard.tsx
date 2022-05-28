@@ -9,6 +9,7 @@ import {
   Text,
 } from '@mantine/core';
 import { DeviceAnalytics } from 'tabler-icons-react';
+import { ApplicationSnapshotType } from '../stores/application/application.model';
 
 const useStyles = createStyles((theme) => ({
   progressLabel: {
@@ -41,44 +42,38 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface StatsSegmentsProps {
-  total: number;
-  data: {
-    label: string;
-    count: string;
-    part: number;
-    color: string;
-  }[];
-}
-
-export const AppCard = ({ total, data }: StatsSegmentsProps) => {
+export const AppCard = ({
+  application,
+}: {
+  application: ApplicationSnapshotType;
+}) => {
   const { classes } = useStyles();
 
-  const segments = data.map((segment) => ({
-    value: segment.part,
-    color: segment.color,
-    label: segment.part > 10 ? `${segment.part}%` : undefined,
+  const segments = application.logMessagesCount.map((segment) => ({
+    value: segment._count,
+    color: '#47d6ab',
+    label: segment.level,
   }));
 
-  const descriptions = data.map((stat) => (
+  const descriptions = application.logMessagesCount.map((stat) => (
     <Box
-      key={stat.label}
-      sx={{ borderBottomColor: stat.color }}
+      key={stat.level}
+      sx={{ borderBottomColor: '#47d6ab' }}
       className={classes.stat}
     >
       <Text transform="uppercase" size="xs" color="dimmed" weight={700}>
-        {stat.label}
+        {stat.level}
       </Text>
 
       <Group position="apart" align="flex-end" spacing={0}>
-        <Text weight={700}>{stat.count}</Text>
+        <Text weight={700}>{stat._count}</Text>
         <Text
-          color={stat.color}
+          color={'#47d6ab'}
           weight={700}
           size="sm"
           className={classes.statCount}
         >
-          {stat.part}%
+          {(stat._count / application._count.logMessages) * 100}%
         </Text>
       </Group>
     </Box>
@@ -89,14 +84,18 @@ export const AppCard = ({ total, data }: StatsSegmentsProps) => {
       <Group position="apart">
         <Group align="flex-end" spacing="xs">
           <Text size="xl" weight={700}>
-            {total}
+            {application.name}
           </Text>
         </Group>
         <DeviceAnalytics size={20} className={classes.icon} />
       </Group>
 
       <Text color="dimmed" size="sm">
-        Page views compared to previous month
+        {application.description}
+      </Text>
+
+      <Text size="xl" weight={700}>
+        {application._count.logMessages}
       </Text>
 
       <Progress

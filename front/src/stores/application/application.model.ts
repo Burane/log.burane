@@ -15,11 +15,22 @@ export type logMessagesCountSnapshotType = SnapshotOut<
 export interface logMessagesCountSnapshot
   extends logMessagesCountSnapshotType {}
 
+export const CountModel = types.model(' Count').props({
+  logMessages: types.number,
+});
+
+export type CountType = Instance<typeof CountModel>;
+export interface CountCount extends CountType {}
+export type CountCountSnapshotType = SnapshotOut<typeof CountModel>;
+export interface logMessagesCountSnapshot
+  extends logMessagesCountSnapshotType {}
+
 export const ApplicationModel = types.model('Application').props({
   id: types.string,
   name: types.string,
   description: types.string,
-  userId: types.number,
+  userId: types.string,
+  _count: CountModel,
   logMessagesCount: types.array(logMessagesCountModel),
 });
 
