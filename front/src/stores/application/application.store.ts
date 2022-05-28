@@ -52,6 +52,25 @@ export const ApplicationStoreModel = types
     },
   }))
   .actions((self) => ({
+    create: flow(function* ({
+      name,
+      description,
+    }: {
+      name: string;
+      description: string;
+    }) {
+      self.isLoading = true;
+      const appApi = new AppApi();
+
+      const res: Result<ApplicationType> = yield appApi.createApplication({
+        name,
+        description,
+      });
+
+      self.isLoading = false;
+      return res;
+    }),
+
     fetchData: flow(function* (paginationQuery?: PaginationQueryType) {
       self.isLoading = true;
       if (!paginationQuery) {

@@ -1,24 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActionIcon,
-  Button,
   Center,
   Container,
   Grid,
-  Group,
   Input,
   Pagination,
-  TextInput,
   Title,
   Tooltip,
 } from '@mantine/core';
 import { AppCard } from '../components/AppCard';
 import { useStore } from '../providers/StoreProvider';
 import { observer } from 'mobx-react-lite';
-import { Adjustments, AlertCircle, Plus, Search } from 'tabler-icons-react';
+import { AlertCircle, Plus, Search } from 'tabler-icons-react';
+import { Drawer } from '@mantine/core';
+import { CreateApp } from '../components/CreateApp';
 
 export const Dashboard = observer(({}) => {
   const { appStore } = useStore();
+  const [opened, setOpened] = useState(false);
 
   useEffect(() => {
     console.log('use effect dashboard');
@@ -54,7 +54,13 @@ export const Dashboard = observer(({}) => {
         </Grid.Col>
         <Grid.Col span={2}>
           <Tooltip label="Create an application">
-            <ActionIcon color="violet" size="lg" radius="xl" variant="filled">
+            <ActionIcon
+              color="violet"
+              size="lg"
+              radius="xl"
+              variant="filled"
+              onClick={() => setOpened(true)}
+            >
               <Plus />
             </ActionIcon>
           </Tooltip>
@@ -76,6 +82,17 @@ export const Dashboard = observer(({}) => {
           }}
         />
       </Center>
+
+      <Drawer
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title="Create an application"
+        padding="xl"
+        size="xl"
+        position="right"
+      >
+        <CreateApp />
+      </Drawer>
     </Container>
   );
 });

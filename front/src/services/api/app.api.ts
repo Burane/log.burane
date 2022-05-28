@@ -49,4 +49,36 @@ export class AppApi {
       return { ok: false, data: { message: 'unknown', statusCode: 500 } };
     }
   }
+
+  async createApplication({
+    name,
+    description,
+  }: {
+    name: string;
+    description: string;
+  }) {
+    try {
+      const response = await this.axios.post<ApplicationType>(
+        'applications/create',
+        { name, description },
+      );
+
+      const data = response.data;
+
+      return { ok: true, data };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
+    }
+  }
 }

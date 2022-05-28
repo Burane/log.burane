@@ -23,6 +23,7 @@ import { Security } from './pages/Security';
 import { Dashboard } from './pages/Dashbard';
 import { useLocalStorage } from '@mantine/hooks';
 import { Api } from './services/api/api';
+import { NotificationsProvider } from '@mantine/notifications';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -87,41 +88,45 @@ export const App = observer(({}) => {
         withGlobalStyles
         withNormalizeCSS
       >
-        <StoreProvider value={rootStore}>
-          <BrowserRouter>
-            <Routes>
-              {/* non auth exclusive routes */}
-              <Route
-                element={
-                  <RequireAuth
-                    isAllowed={!authStore.isAuthenticated}
-                    redirectPath="/dashboard"
-                  />
-                }
-              >
-                <Route path="/" element={<Navigate to="/login" replace />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Register />} />
-                <Route path="/forgotPassword" element={<ForgotPassword />} />
-              </Route>
-
-              {/* no restriction routes */}
-              <Route path="/resetPassword" element={<ResetPassword />} />
-
-              {/* auth exclusive routes */}
-              <Route
-                element={<RequireAuth isAllowed={authStore.isAuthenticated} />}
-              >
-                <Route element={<Layout />}>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/account" element={<Account />} />
-                  <Route path="/security" element={<Security />} />
+        <NotificationsProvider autoClose={4000}>
+          <StoreProvider value={rootStore}>
+            <BrowserRouter>
+              <Routes>
+                {/* non auth exclusive routes */}
+                <Route
+                  element={
+                    <RequireAuth
+                      isAllowed={!authStore.isAuthenticated}
+                      redirectPath="/dashboard"
+                    />
+                  }
+                >
+                  <Route path="/" element={<Navigate to="/login" replace />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Register />} />
+                  <Route path="/forgotPassword" element={<ForgotPassword />} />
                 </Route>
-              </Route>
-              <Route path="*" element={<PageNotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </StoreProvider>
+
+                {/* no restriction routes */}
+                <Route path="/resetPassword" element={<ResetPassword />} />
+
+                {/* auth exclusive routes */}
+                <Route
+                  element={
+                    <RequireAuth isAllowed={authStore.isAuthenticated} />
+                  }
+                >
+                  <Route element={<Layout />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/account" element={<Account />} />
+                    <Route path="/security" element={<Security />} />
+                  </Route>
+                </Route>
+                <Route path="*" element={<PageNotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </StoreProvider>
+        </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );
