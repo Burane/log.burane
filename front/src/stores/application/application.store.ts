@@ -21,7 +21,7 @@ const defaultPagination: PaginationType = {
   isPreviousPage: false,
 };
 const defaultPaginationQuery: PaginationQueryType = {
-  pagination: { pageIndex: 0, pageSize: 15 },
+  pagination: { pageIndex: 0, pageSize: 2 },
   search: undefined,
   sort: undefined,
 };
@@ -71,13 +71,15 @@ export const ApplicationStoreModel = types
             self.applications.replace(results);
             self.shouldResetProduct = false;
           } else {
-            self.applications.replace(
-              self.applications.concat(
-                results.filter(
-                  (p) => !self.applications.some((p2) => p2.id === p.id),
-                ),
-              ),
-            );
+            // de base pour faire un infinite scroll
+            // self.applications.replace(
+            //   self.applications.concat(
+            //     results.filter(
+            //       (p) => !self.applications.some((p2) => p2.id === p.id),
+            //     ),
+            //   ),
+            // );
+            self.applications.replace(results);
           }
         }
       }
@@ -124,6 +126,16 @@ export const ApplicationStoreModel = types
           pagination: {
             pageSize: self.paginationQuery?.pagination?.pageSize,
             pageIndex: self.pagination.pageIndex + 1,
+          },
+        });
+    },
+    fetchPage: (page: number) => {
+      if (page >= 0 && page < self.pagination.pageCount)
+        self.setPaginationQuery({
+          ...self.paginationQuery,
+          pagination: {
+            pageSize: self.paginationQuery?.pagination?.pageSize,
+            pageIndex: page,
           },
         });
     },
