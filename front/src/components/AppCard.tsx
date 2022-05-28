@@ -17,6 +17,7 @@ import {
   ApplicationSnapshotType,
   LogLevel,
 } from '../stores/application/application.model';
+import { useStore } from '../providers/StoreProvider';
 
 const useStyles = createStyles((theme) => ({
   progressLabel: {
@@ -49,6 +50,7 @@ export const AppCard = ({
 }) => {
   const { classes } = useStyles();
   const [deletePopoverOpened, setDeletePopoverOpened] = useState(false);
+  const { appStore } = useStore();
 
   function getColorForLogLevel(logLevel: LogLevel | string) {
     switch (logLevel) {
@@ -140,7 +142,12 @@ export const AppCard = ({
               >
                 Cancel
               </Button>
-              <Button color="red">Delete</Button>
+              <Button
+                color="red"
+                onClick={() => appStore.delete({ id: application.id })}
+              >
+                Delete
+              </Button>
             </Group>
           </Popover>
         </Group>

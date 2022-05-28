@@ -52,25 +52,6 @@ export const ApplicationStoreModel = types
     },
   }))
   .actions((self) => ({
-    create: flow(function* ({
-      name,
-      description,
-    }: {
-      name: string;
-      description: string;
-    }) {
-      self.isLoading = true;
-      const appApi = new AppApi();
-
-      const res: Result<ApplicationType> = yield appApi.createApplication({
-        name,
-        description,
-      });
-
-      self.isLoading = false;
-      return res;
-    }),
-
     fetchData: flow(function* (paginationQuery?: PaginationQueryType) {
       self.isLoading = true;
       if (!paginationQuery) {
@@ -158,12 +139,47 @@ export const ApplicationStoreModel = types
           },
         });
     },
+    create: flow(function* ({
+      name,
+      description,
+    }: {
+      name: string;
+      description: string;
+    }) {
+      self.isLoading = true;
+      const appApi = new AppApi();
+
+      const res: Result<ApplicationType> = yield appApi.createApplication({
+        name,
+        description,
+      });
+
+      yield self.fetchData();
+      self.isLoading = false;
+      return res;
+    }),
+
+    delete: flow(function* ({ id }: { id: string }) {
+      self.isLoading = true;
+      const appApi = new AppApi();
+
+      const res: Result<ApplicationType> = yield appApi.deleteApplication({
+        id,
+      });
+      yield self.fetchData();
+      self.isLoading = false;
+      return res;
+    }),
   }));
 
 type ApplicationStoreType = Instance<typeof ApplicationStoreModel>;
+
 export interface ApplicationStore extends ApplicationStoreType {}
+
 type ApplicationStoreSnapshotType = SnapshotOut<typeof ApplicationStoreModel>;
+
 export interface ApplicationStoreSnapshot
   extends ApplicationStoreSnapshotType {}
+
 export const createApplicationStoreDefaultModel = () =>
   types.optional(ApplicationStoreModel, {});
