@@ -1,9 +1,10 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ActionIcon,
   Box,
   Button,
   createStyles,
+  Drawer,
   Group,
   Paper,
   Popover,
@@ -18,6 +19,7 @@ import {
   LogLevel,
 } from '../stores/application/application.model';
 import { useStore } from '../providers/StoreProvider';
+import { UpdateApp } from './UpdateApp';
 
 const useStyles = createStyles((theme) => ({
   progressLabel: {
@@ -50,6 +52,7 @@ export const AppCard = ({
 }) => {
   const { classes } = useStyles();
   const [deletePopoverOpened, setDeletePopoverOpened] = useState(false);
+  const [updateDrawerOpened, setUpdateDrawerOpened] = useState(false);
   const { appStore } = useStore();
 
   function getColorForLogLevel(logLevel: LogLevel | string) {
@@ -110,7 +113,15 @@ export const AppCard = ({
           </Text>
         </Group>
         <Group>
-          <Settings size={20} />
+          <Tooltip label="Modify">
+            <ActionIcon
+              color="gray"
+              variant="transparent"
+              onClick={() => setUpdateDrawerOpened(true)}
+            >
+              <Settings size={20} />
+            </ActionIcon>
+          </Tooltip>
           <Popover
             withArrow
             radius="lg"
@@ -172,6 +183,19 @@ export const AppCard = ({
       <SimpleGrid cols={3} breakpoints={[{ maxWidth: 'xs', cols: 1 }]} mt="xl">
         {descriptions}
       </SimpleGrid>
+      <Drawer
+        opened={updateDrawerOpened}
+        onClose={() => setUpdateDrawerOpened(false)}
+        title="Update an application"
+        padding="xl"
+        size="xl"
+        position="right"
+      >
+        <UpdateApp
+          application={application}
+          setDrawerState={setUpdateDrawerOpened}
+        />
+      </Drawer>
     </Paper>
   );
 };

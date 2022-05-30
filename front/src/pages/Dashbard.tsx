@@ -3,6 +3,7 @@ import {
   ActionIcon,
   Center,
   Container,
+  Drawer,
   Grid,
   Input,
   Pagination,
@@ -13,12 +14,11 @@ import { AppCard } from '../components/AppCard';
 import { useStore } from '../providers/StoreProvider';
 import { observer } from 'mobx-react-lite';
 import { AlertCircle, Plus, Search } from 'tabler-icons-react';
-import { Drawer } from '@mantine/core';
 import { CreateApp } from '../components/CreateApp';
 
 export const Dashboard = observer(({}) => {
   const { appStore } = useStore();
-  const [opened, setOpened] = useState(false);
+  const [createDrawerOpened, setCreateDrawerOpened] = useState(false);
 
   useEffect(() => {
     console.log('use effect dashboard');
@@ -59,7 +59,7 @@ export const Dashboard = observer(({}) => {
               size="lg"
               radius="xl"
               variant="filled"
-              onClick={() => setOpened(true)}
+              onClick={() => setCreateDrawerOpened(true)}
             >
               <Plus />
             </ActionIcon>
@@ -84,14 +84,14 @@ export const Dashboard = observer(({}) => {
       </Center>
 
       <Drawer
-        opened={opened}
-        onClose={() => setOpened(false)}
+        opened={createDrawerOpened}
+        onClose={() => setCreateDrawerOpened(false)}
         title="Create an application"
         padding="xl"
         size="xl"
         position="right"
       >
-        <CreateApp setDrawerState={setOpened} />
+        <CreateApp setDrawerState={setCreateDrawerOpened} />
       </Drawer>
     </Container>
   );

@@ -86,7 +86,7 @@ export const UpdateApp = ({
           />
           <Group position="center" mt={40}>
             <Button loading={loading} type="submit">
-              Create
+              Update
             </Button>
           </Group>
         </form>
