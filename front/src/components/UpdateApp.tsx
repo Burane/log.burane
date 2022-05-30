@@ -46,7 +46,7 @@ export const UpdateApp = ({
     if (res.ok) {
       showNotification({
         title: 'Success !',
-        message: 'Application created',
+        message: 'Application updated',
         color: 'green',
         icon: <Check />,
         onClose(props: NotificationProps) {
