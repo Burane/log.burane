@@ -10,6 +10,7 @@ import {
   Progress,
   SimpleGrid,
   Text,
+  Tooltip,
 } from '@mantine/core';
 import { Settings, Trash } from 'tabler-icons-react';
 import {
@@ -124,13 +125,15 @@ export const AppCard = ({
             }
             width={300}
             target={
-              <ActionIcon
-                color="red"
-                variant="transparent"
-                onClick={() => setDeletePopoverOpened((b) => !b)}
-              >
-                <Trash size={20} />
-              </ActionIcon>
+              <Tooltip label="Delete">
+                <ActionIcon
+                  color="red"
+                  variant="transparent"
+                  onClick={() => setDeletePopoverOpened((b) => !b)}
+                >
+                  <Trash size={20} />
+                </ActionIcon>
+              </Tooltip>
             }
           >
             <Text>This action is irreversible</Text>
