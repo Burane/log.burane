@@ -15,6 +15,8 @@ import { z } from 'zod';
 import { useStore } from '../providers/StoreProvider';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
+import { NotificationProps, showNotification } from '@mantine/notifications';
+import { Check, X } from 'tabler-icons-react';
 
 export const Login = observer(({}) => {
   const navigate = useNavigate();
@@ -40,6 +42,15 @@ export const Login = observer(({}) => {
       email: values.email,
       password: values.password,
     });
+
+    if (!res.ok) {
+      showNotification({
+        title: 'Error !',
+        message: res.data.message,
+        color: 'red',
+        icon: <X />,
+      });
+    }
   };
 
   return (
