@@ -12,11 +12,12 @@ import {
   Center,
   Box,
 } from '@mantine/core';
-import { ArrowLeft } from 'tabler-icons-react';
+import { ArrowLeft, Check, X } from 'tabler-icons-react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm, zodResolver } from '@mantine/form';
 import { Api } from '../services/api/api';
+import { NotificationProps, showNotification } from '@mantine/notifications';
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -61,7 +62,23 @@ export function ForgotPassword() {
     const res = await api.forgotPassword({
       email: values.email,
     });
-    if (res.kind === 'ok') {
+    if (res.ok) {
+      showNotification({
+        title: 'Success !',
+        message: 'An email with a reset link has been sent',
+        color: 'green',
+        icon: <Check />,
+        onClose(props: NotificationProps) {
+          navigate('/login');
+        },
+      });
+    } else {
+      showNotification({
+        title: 'Error !',
+        message: res.data.message,
+        color: 'red',
+        icon: <X />,
+      });
     }
   };
 

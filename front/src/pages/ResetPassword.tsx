@@ -11,11 +11,12 @@ import {
   PasswordInput,
   Title,
 } from '@mantine/core';
-import { ArrowLeft } from 'tabler-icons-react';
+import { ArrowLeft, Check, X } from 'tabler-icons-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm, zodResolver } from '@mantine/form';
 import { z } from 'zod';
 import { Api } from '../services/api/api';
+import { NotificationProps, showNotification } from '@mantine/notifications';
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -67,8 +68,23 @@ export function ResetPassword() {
       passwordConfirmation: values.passwordConfirmation,
       token,
     });
-    if (res.kind === 'ok') {
-      navigate('/login');
+    if (res.ok) {
+      showNotification({
+        title: 'Success !',
+        message: 'Password has been changed',
+        color: 'green',
+        icon: <Check />,
+        onClose(props: NotificationProps) {
+          navigate('/login');
+        },
+      });
+    } else {
+      showNotification({
+        title: 'Error !',
+        message: res.data.message,
+        color: 'red',
+        icon: <X />,
+      });
     }
   };
 
