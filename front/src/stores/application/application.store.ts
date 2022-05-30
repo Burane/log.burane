@@ -158,6 +158,28 @@ export const ApplicationStoreModel = types
       self.isLoading = false;
       return res;
     }),
+    update: flow(function* ({
+      name,
+      description,
+      appId,
+    }: {
+      name: string;
+      description: string;
+      appId: string;
+    }) {
+      self.isLoading = true;
+      const appApi = new AppApi();
+
+      const res: Result<ApplicationType> = yield appApi.updateApplication({
+        name,
+        description,
+        appId,
+      });
+
+      yield self.fetchData();
+      self.isLoading = false;
+      return res;
+    }),
 
     delete: flow(function* ({ id }: { id: string }) {
       self.isLoading = true;
