@@ -3,7 +3,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearch", "interactiveTransactions"]
 }
 
 datasource db {
@@ -29,7 +29,7 @@ model User {
   applications Application[]
 }
 
-enum LogLevel {
+enum LogLevels {
   DEBUG
   INFO
   WARN
@@ -49,7 +49,7 @@ model Application {
 
 model LogMessage {
   id            String      @id @default(cuid())
-  level         LogLevel
+  level         LogLevels    @default(INFO)
   date          DateTime
   message       String
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)

@@ -1,9 +1,9 @@
-import { PrismaClient, LogLevel } from '@prisma/client';
+import { PrismaClient, LogLevels } from '@prisma/client';
 import { users } from './users';
 
 const prisma = new PrismaClient();
 
-const LogLevelArray: LogLevel[] = [
+const LogLevelArray: LogLevels[] = [
   'DEBUG',
   'INFO',
   'WARN',

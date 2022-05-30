@@ -10,6 +10,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import * as path from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ApplicationModule } from './application/application.module';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ApplicationModule } from './application/application.module';
       },
     }),
     ApplicationModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService, CanCUDUserGuard],
