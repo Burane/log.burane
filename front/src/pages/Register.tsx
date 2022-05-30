@@ -15,6 +15,8 @@ import { z } from 'zod';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { Api } from '../services/api/api';
+import { NotificationProps, showNotification } from '@mantine/notifications';
+import { Check, X } from 'tabler-icons-react';
 
 export const Register = observer(({}) => {
   const navigate = useNavigate();
@@ -43,8 +45,23 @@ export const Register = observer(({}) => {
       password: values.password,
       passwordConfirmation: values.passwordConfirmation,
     });
-    if (res.kind === 'ok') {
-      navigate('/login');
+    if (res.ok) {
+      showNotification({
+        title: 'Success !',
+        message: 'Account created',
+        color: 'green',
+        icon: <Check />,
+        onClose(props: NotificationProps) {
+          navigate('/login');
+        },
+      });
+    } else {
+      showNotification({
+        title: 'Error !',
+        message: res.data.message,
+        color: 'red',
+        icon: <X />,
+      });
     }
   };
 
