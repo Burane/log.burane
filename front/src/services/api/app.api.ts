@@ -82,6 +82,40 @@ export class AppApi {
     }
   }
 
+  async updateApplication({
+    name,
+    description,
+    appId,
+  }: {
+    name: string;
+    description: string;
+    appId: string;
+  }) {
+    try {
+      const response = await this.axios.patch<ApplicationType>(
+        `applications/${appId}`,
+        { name, description },
+      );
+
+      const data = response.data;
+
+      return { ok: true, data };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
+    }
+  }
+
   async deleteApplication({ id }: { id: string }) {
     try {
       const response = await this.axios.delete<ApplicationType>(
