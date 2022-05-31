@@ -11,8 +11,8 @@ import { CreateLogDto } from './dto/create-log.dto';
 import { UserOwnAppGuard } from './guards/UserOwnApp.guard';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 
-@UseGuards(JwtGuard)
 @UseGuards(UserOwnAppGuard)
+@UseGuards(JwtGuard)
 @Controller('applications/:appId/logs')
 export class LogController {
   constructor(private readonly logService: LogService) {

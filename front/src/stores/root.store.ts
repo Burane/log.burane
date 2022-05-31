@@ -6,12 +6,14 @@ import {
   ApplicationStore,
   ApplicationStoreModel,
 } from './application/application.store';
+import { LogStore, LogStoreModel } from './log/log.store';
 
 export type RootStoreModel = Instance<typeof RootStore>;
 export type RootStoreEnv = {
   userStore: UserStore;
   authStore: AuthStore;
   appStore: ApplicationStore;
+  logStore: LogStore;
 };
 
 export const RootStore = types
@@ -19,6 +21,7 @@ export const RootStore = types
     userStore: types.optional(UserStoreModel, {} as any),
     authStore: types.optional(AuthStoreModel, {} as any),
     appStore: types.optional(ApplicationStoreModel, {} as any),
+    logStore: types.optional(LogStoreModel, {} as any),
   })
   .actions((self) => ({
     reset() {

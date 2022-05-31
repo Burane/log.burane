@@ -20,6 +20,7 @@ import {
 } from '../stores/application/application.model';
 import { useStore } from '../providers/StoreProvider';
 import { UpdateApp } from './UpdateApp';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
   progressLabel: {
@@ -54,6 +55,7 @@ export const AppCard = ({
   const [deletePopoverOpened, setDeletePopoverOpened] = useState(false);
   const [updateDrawerOpened, setUpdateDrawerOpened] = useState(false);
   const { appStore } = useStore();
+  const navigate = useNavigate();
 
   function getColorForLogLevel(logLevel: LogLevel | string) {
     switch (logLevel) {
@@ -107,7 +109,14 @@ export const AppCard = ({
   return (
     <Paper withBorder p="md" radius="lg" my={20}>
       <Group position="apart">
-        <Group align="flex-end" spacing="xs">
+        <Group
+          align="flex-end"
+          spacing="xs"
+          onClick={() => {
+            navigate(`/logs/${application.id}`);
+          }}
+          sx={{ cursor: 'pointer' }}
+        >
           <Text size="xl" weight={700}>
             {application.name}
           </Text>

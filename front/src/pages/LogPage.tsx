@@ -1,15 +1,20 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Container, Paper, Text, Title } from '@mantine/core';
+import { Container, Text, Title } from '@mantine/core';
 import { useStore } from '../providers/StoreProvider';
-import { ApplicationSnapshotType } from '../stores/application/application.model';
+import { useParams } from 'react-router-dom';
 
-export const LogPage = observer(
-  ({ application }: { application: ApplicationSnapshotType }) => {
-    useEffect(() => {
-      return () => {};
-    }, []);
+export const LogPage = observer(({}) => {
+  const { logStore } = useStore();
+  let { appId } = useParams();
 
+  useEffect(() => {
+    console.log('id:', appId);
+    if (!appId) return;
+    logStore.fetchData(appId);
+  }, []);
+
+  if (!appId) {
     return (
       <Container>
         <Title my={30} align="center">
@@ -17,5 +22,17 @@ export const LogPage = observer(
         </Title>
       </Container>
     );
-  },
-);
+  }
+
+  return (
+    <Container>
+      <Title my={30} align="center">
+        Logs
+      </Title>
+
+      {logStore.logMessages.map((log) => {
+        return <Text>{log.message}</Text>;
+      })}
+    </Container>
+  );
+});

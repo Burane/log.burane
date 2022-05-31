@@ -21,9 +21,9 @@ const defaultPagination: PaginationType = {
   isPreviousPage: false,
 };
 const defaultPaginationQuery: PaginationQueryType = {
-  pagination: { pageIndex: 0, pageSize: 2 },
+  pagination: { pageIndex: 0, pageSize: 15 },
   search: undefined,
-  sort: cast([{ sortBy: 'name', orderBy: 'asc' }]),
+  sort: undefined,
 };
 
 let timeout: NodeJS.Timeout;

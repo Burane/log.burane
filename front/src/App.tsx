@@ -24,6 +24,7 @@ import { Dashboard } from './pages/Dashbard';
 import { useLocalStorage } from '@mantine/hooks';
 import { Api } from './services/api/api';
 import { NotificationsProvider } from '@mantine/notifications';
+import { LogPage } from './pages/LogPage';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -120,6 +121,7 @@ export const App = observer(({}) => {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/account" element={<Account />} />
                     <Route path="/security" element={<Security />} />
+                    <Route path="/logs/:appId" element={<LogPage />} />
                   </Route>
                 </Route>
                 <Route path="*" element={<PageNotFound />} />
