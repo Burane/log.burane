@@ -21,7 +21,6 @@ export const Dashboard = observer(({}) => {
   const [createDrawerOpened, setCreateDrawerOpened] = useState(false);
 
   useEffect(() => {
-    console.log('use effect dashboard');
     appStore.fetchData();
   }, []);
 

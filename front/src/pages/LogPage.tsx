@@ -3,24 +3,36 @@ import { observer } from 'mobx-react-lite';
 import {
   Center,
   Container,
+  Input,
   Pagination,
   ScrollArea,
   Text,
   Title,
+  Tooltip,
 } from '@mantine/core';
 import { useStore } from '../providers/StoreProvider';
 import { useParams } from 'react-router-dom';
 import { LogCard } from '../components/LogCard';
+import { AlertCircle, Search } from 'tabler-icons-react';
 
 export const LogPage = observer(({}) => {
   const { logStore } = useStore();
   let { appId } = useParams();
 
   useEffect(() => {
-    console.log('id:', appId);
     if (!appId) return;
     logStore.fetchData(appId);
   }, []);
+
+  const rightSection = (
+    <Tooltip
+      label="You can search on the log message or the log level"
+      position="top"
+      placement="end"
+    >
+      <AlertCircle size={16} style={{ display: 'block', opacity: 0.5 }} />
+    </Tooltip>
+  );
 
   if (!appId) {
     return (
@@ -36,6 +48,15 @@ export const LogPage = observer(({}) => {
         <Title my={30} align="center">
           Logs
         </Title>
+        <Input
+          icon={<Search />}
+          radius="lg"
+          placeholder="Search in logs"
+          onChange={(event: { currentTarget: { value: string } }) => {
+            if (appId) logStore.searchLogs(event.currentTarget.value, appId);
+          }}
+          rightSection={rightSection}
+        />
         <ScrollArea style={{ height: '70vh' }} offsetScrollbars>
           {logStore.logMessages.map((log) => {
             return <LogCard key={log.id} log={log} />;
@@ -48,6 +69,7 @@ export const LogPage = observer(({}) => {
             size="lg"
             radius="lg"
             withEdges
+            mt={30}
             page={logStore.pagination.pageIndex + 1}
             onChange={(page) => {
               if (appId) logStore.fetchPage(page - 1, appId);
