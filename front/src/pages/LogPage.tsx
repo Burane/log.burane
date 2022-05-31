@@ -1,8 +1,16 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Container, Text, Title } from '@mantine/core';
+import {
+  Center,
+  Container,
+  Pagination,
+  ScrollArea,
+  Text,
+  Title,
+} from '@mantine/core';
 import { useStore } from '../providers/StoreProvider';
 import { useParams } from 'react-router-dom';
+import { LogCard } from '../components/LogCard';
 
 export const LogPage = observer(({}) => {
   const { logStore } = useStore();
@@ -22,17 +30,29 @@ export const LogPage = observer(({}) => {
         </Title>
       </Container>
     );
+  } else {
+    return (
+      <Container>
+        <Title my={30} align="center">
+          Logs
+        </Title>
+        {logStore.logMessages.map((log) => {
+          return <LogCard key={log.id} log={log} />;
+        })}
+
+        <Center>
+          <Pagination
+            total={logStore.pagination.pageCount}
+            size="lg"
+            radius="lg"
+            withEdges
+            page={logStore.pagination.pageIndex + 1}
+            onChange={(page) => {
+              if (appId) logStore.fetchPage(page - 1, appId);
+            }}
+          />
+        </Center>
+      </Container>
+    );
   }
-
-  return (
-    <Container>
-      <Title my={30} align="center">
-        Logs
-      </Title>
-
-      {logStore.logMessages.map((log) => {
-        return <Text>{log.message}</Text>;
-      })}
-    </Container>
-  );
 });
