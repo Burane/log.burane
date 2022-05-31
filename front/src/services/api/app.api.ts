@@ -7,6 +7,7 @@ import qs from 'qs';
 import { ApiConfig } from './api.config';
 import { ApplicationType } from '../../stores/application/application.model';
 import { PaginationQueryType } from '../../stores/genericModel/paginationModel';
+import { LogMessageType } from '../../stores/log/log.model';
 
 export class AppApi {
   axios!: AxiosInstance;
@@ -120,6 +121,36 @@ export class AppApi {
     try {
       const response = await this.axios.delete<ApplicationType>(
         `applications/${id}`,
+      );
+
+      const data = response.data;
+
+      return { ok: true, data };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
+    }
+  }
+
+  async getApplicationsLogs(
+    appId: string,
+    paginationQuery?: PaginationQueryType,
+  ): Promise<Result<PaginationResponse<LogMessageType>>> {
+    try {
+      const response = await this.axios.get<PaginationResponse<LogMessageType>>(
+        paginationQuery
+          ? `/applications/${appId}/logs?${qs.stringify(paginationQuery)}`
+          : `/applications/${appId}/logs`,
       );
 
       const data = response.data;

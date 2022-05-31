@@ -10,7 +10,7 @@ import {
   PaginationQueryType,
   PaginationType,
 } from '../genericModel/paginationModel';
-import { ApplicationModel, ApplicationType } from './application.model';
+import { LogMessageModel, LogMessageType } from './log.model';
 
 const defaultPagination: PaginationType = {
   totalSize: 0,
@@ -28,10 +28,10 @@ const defaultPaginationQuery: PaginationQueryType = {
 
 let timeout: NodeJS.Timeout;
 
-export const ApplicationStoreModel = types
+export const LogStoreModel = types
   .model('ApplicationStore')
   .props({
-    applications: types.optional(types.array(ApplicationModel), []),
+    logMessages: types.optional(types.array(LogMessageModel), []),
     pagination: types.optional(PaginationModel, defaultPagination),
     isLoading: types.optional(types.boolean, false),
     shouldReset: types.optional(types.boolean, false),
@@ -44,7 +44,7 @@ export const ApplicationStoreModel = types
   .extend(withEnvironment)
   .actions((self) => ({
     reset: () => {
-      self.applications.splice(0, self.applications.length);
+      self.logMessages.splice(0, self.logMessages.length);
       self.pagination = defaultPagination;
       self.isLoading = false;
       self.shouldReset = false;
@@ -52,23 +52,26 @@ export const ApplicationStoreModel = types
     },
   }))
   .actions((self) => ({
-    fetchData: flow(function* (paginationQuery?: PaginationQueryType) {
+    fetchData: flow(function* (
+      appId: string,
+      paginationQuery?: PaginationQueryType,
+    ) {
       self.isLoading = true;
       if (!paginationQuery) {
         paginationQuery = self.paginationQuery;
       }
       const appApi = new AppApi();
-      const res: Result<PaginationResponse<ApplicationType>> =
-        yield appApi.getApplications(paginationQuery);
+      const res: Result<PaginationResponse<LogMessageType>> =
+        yield appApi.getApplicationsLogs(appId, paginationQuery);
 
       if (res.ok) {
         const { pagination, results } = res.data;
         self.pagination = pagination;
         if (paginationQuery?.search?.length ?? 0 > 0) {
-          self.applications.replace(results);
+          self.logMessages.replace(results);
         } else {
           if (self.shouldReset) {
-            self.applications.replace(results);
+            self.logMessages.replace(results);
             self.shouldReset = false;
           } else {
             // de base pour faire un infinite scroll
@@ -79,7 +82,7 @@ export const ApplicationStoreModel = types
             //     ),
             //   ),
             // );
-            self.applications.replace(results);
+            self.logMessages.replace(results);
           }
         }
       }
@@ -87,16 +90,19 @@ export const ApplicationStoreModel = types
     }),
   }))
   .actions((self) => ({
-    setPaginationQuery: (paginationQuery: PaginationQueryType) => {
+    setPaginationQuery: (
+      appId: string,
+      paginationQuery: PaginationQueryType,
+    ) => {
       self.paginationQuery = paginationQuery;
-      self.fetchData();
+      self.fetchData(appId);
     },
-    setShouldResetApplications: (shouldResetProduct: boolean) => {
+    setShouldReset: (shouldResetProduct: boolean) => {
       self.shouldReset = shouldResetProduct;
     },
   }))
   .actions((self) => ({
-    searchApplications: (search: string) => {
+    searchLogs: (search: string, appId: string) => {
       let isProductReset = false;
       clearTimeout(timeout);
       timeout = setTimeout(() => {
@@ -105,10 +111,10 @@ export const ApplicationStoreModel = types
         }
 
         if (isProductReset && search.length === 0) {
-          self.setShouldResetApplications(true);
+          self.setShouldReset(true);
         }
 
-        self.setPaginationQuery({
+        self.setPaginationQuery(appId, {
           ...self.paginationQuery,
           search: search,
           pagination: {
@@ -119,9 +125,9 @@ export const ApplicationStoreModel = types
       }, 200);
     },
 
-    fetchNextPage: () => {
+    fetchNextPage: (appId: string) => {
       if (self.pagination?.isNextPage)
-        self.setPaginationQuery({
+        self.setPaginationQuery(appId, {
           ...self.paginationQuery,
           pagination: {
             pageSize: self.paginationQuery?.pagination?.pageSize,
@@ -129,9 +135,9 @@ export const ApplicationStoreModel = types
           },
         });
     },
-    fetchPage: (page: number) => {
+    fetchPage: (page: number, appId: string) => {
       if (page >= 0 && page < self.pagination.pageCount)
-        self.setPaginationQuery({
+        self.setPaginationQuery(appId, {
           ...self.paginationQuery,
           pagination: {
             pageSize: self.paginationQuery?.pagination?.pageSize,
@@ -139,69 +145,15 @@ export const ApplicationStoreModel = types
           },
         });
     },
-    create: flow(function* ({
-      name,
-      description,
-    }: {
-      name: string;
-      description: string;
-    }) {
-      self.isLoading = true;
-      const appApi = new AppApi();
-
-      const res: Result<ApplicationType> = yield appApi.createApplication({
-        name,
-        description,
-      });
-
-      yield self.fetchData();
-      self.isLoading = false;
-      return res;
-    }),
-    update: flow(function* ({
-      name,
-      description,
-      appId,
-    }: {
-      name: string;
-      description: string;
-      appId: string;
-    }) {
-      self.isLoading = true;
-      const appApi = new AppApi();
-
-      const res: Result<ApplicationType> = yield appApi.updateApplication({
-        name,
-        description,
-        appId,
-      });
-
-      yield self.fetchData();
-      self.isLoading = false;
-      return res;
-    }),
-
-    delete: flow(function* ({ id }: { id: string }) {
-      self.isLoading = true;
-      const appApi = new AppApi();
-
-      const res: Result<ApplicationType> = yield appApi.deleteApplication({
-        id,
-      });
-      yield self.fetchData();
-      self.isLoading = false;
-      return res;
-    }),
   }));
 
-type ApplicationStoreType = Instance<typeof ApplicationStoreModel>;
+type LogStoreType = Instance<typeof LogStoreModel>;
 
-export interface ApplicationStore extends ApplicationStoreType {}
+export interface LogStore extends LogStoreType {}
 
-type ApplicationStoreSnapshotType = SnapshotOut<typeof ApplicationStoreModel>;
+type LogStoreSnapshotType = SnapshotOut<typeof LogStoreModel>;
 
-export interface ApplicationStoreSnapshot
-  extends ApplicationStoreSnapshotType {}
+export interface ApplicationStoreSnapshot extends LogStoreSnapshotType {}
 
 export const createApplicationStoreDefaultModel = () =>
-  types.optional(ApplicationStoreModel, {});
+  types.optional(LogStoreModel, {});
