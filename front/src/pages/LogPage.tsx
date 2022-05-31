@@ -36,9 +36,11 @@ export const LogPage = observer(({}) => {
         <Title my={30} align="center">
           Logs
         </Title>
-        {logStore.logMessages.map((log) => {
-          return <LogCard key={log.id} log={log} />;
-        })}
+        <ScrollArea style={{ height: '70vh' }} offsetScrollbars>
+          {logStore.logMessages.map((log) => {
+            return <LogCard key={log.id} log={log} />;
+          })}
+        </ScrollArea>
 
         <Center>
           <Pagination
