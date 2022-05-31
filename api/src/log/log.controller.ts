@@ -3,7 +3,7 @@ import { LogService } from './log.service';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { AppEntity } from '../application/entities/app.entity';
 import { GetUser } from '../auth/decorators/get.user.decorator';
-import { User } from '@prisma/client';
+import { LogMessage, User } from '@prisma/client';
 import { PaginationQuery, PaginationResponse } from '../utils/types/pagination';
 import { appWithStats } from '../utils/types/AppWithStats';
 import { LogEntity } from './entities/log.entity';
@@ -30,12 +30,11 @@ export class LogController {
   async findAll(
     @Query()
       { sort, search, pagination }: PaginationQuery,
-    @GetUser() user: User,
     @Param('appId') appId: string
   ) {
     const { pageSize, pageIndex } = pagination ?? {};
     const {
-      applications,
+      logMessages,
       pageSize: size,
       pageCount,
       totalSize,
@@ -44,8 +43,8 @@ export class LogController {
       isNextPage,
     } = await this.logService.getAll(pageSize, pageIndex, search, sort, appId);
 
-    const response: PaginationResponse<appWithStats> = {
-      results: applications.map(app => new AppEntity(app)),
+    const response: PaginationResponse<LogMessage> = {
+      results: logMessages.map(app => new LogEntity(app)),
       pagination: {
         totalSize,
         pageCount,
@@ -59,9 +58,9 @@ export class LogController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: AppEntity })
+  @ApiOkResponse({ type: LogEntity })
   async findOne(@Param('id') id: string) {
-    return new AppEntity(await this.logService.getById(id));
+    return new LogEntity(await this.logService.getById(id));
   }
 
 
