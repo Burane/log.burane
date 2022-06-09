@@ -6,6 +6,7 @@ import {
   createStyles,
   Group,
   Navbar,
+  Tooltip,
   UnstyledButton,
   useMantineColorScheme,
   useMantineTheme,
@@ -71,20 +72,21 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
   const { classes, cx } = useStyles();
 
   return (
-    // <Tooltip
-    //   label={label}
-    //   position="bottom"
-    //   placement="center"
-    //   withArrow
-    //   transitionDuration={0}
-    // >
-    <UnstyledButton
-      onClick={onClick}
-      className={cx(classes.link, { [classes.active]: active })}
+    <Tooltip
+      label={label}
+      position="right"
+      placement="center"
+      withArrow
+      transitionDuration={0}
+      withinPortal={false}
     >
-      <Icon />
-    </UnstyledButton>
-    // </Tooltip>
+      <UnstyledButton
+        onClick={onClick}
+        className={cx(classes.link, { [classes.active]: active })}
+      >
+        <Icon />
+      </UnstyledButton>
+    </Tooltip>
   );
 }
 
