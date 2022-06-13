@@ -114,9 +114,30 @@ export class ApplicationService {
     };
   }
 
-  async getById(id: string, user: User) {
+  async getByIdAndUserId(id: string, user: User) {
     const app = await this.prisma.application.findUnique({
       where: { appUserId: { userId: user.id, id } },
+      include: {
+        _count: {
+          select: {
+            logMessages: true,
+          },
+        },
+      },
+    });
+    const count = await this.prisma.logMessage.groupBy({
+      by: ['level'],
+      _count: true,
+      where: {
+        applicationId: app.id,
+      },
+    });
+    return { ...app, logMessagesCount: [...count] };
+  }
+
+  async getById(id: string) {
+    const app = await this.prisma.application.findUnique({
+      where: { id },
       include: {
         _count: {
           select: {

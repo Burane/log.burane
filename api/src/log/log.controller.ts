@@ -11,22 +11,20 @@ import { CreateLogDto } from './dto/create-log.dto';
 import { UserOwnAppGuard } from './guards/UserOwnApp.guard';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 
-@UseGuards(UserOwnAppGuard)
-@UseGuards(JwtGuard)
-@Controller('applications/:appId/logs')
 export class LogController {
   constructor(private readonly logService: LogService) {
   }
 
-  @Post('create')
+  @Post('applications/create/:token')
   @ApiCreatedResponse({ type: LogEntity })
-  async create(@Body() { message, level, date }: CreateLogDto, @Param('appId') appId: string) {
-    const log = await this.logService.create(message, level, date, appId);
+  async create(@Body() { message, level, date }: CreateLogDto, @Param('token') token: string) {
+    const log = await this.logService.create(message, level, date, token);
     return new LogEntity(log);
   }
 
-  @ApiCreatedResponse({ type: PaginationResponse })
-  @Get('')
+  @UseGuards(UserOwnAppGuard)
+  @UseGuards(JwtGuard)  @ApiCreatedResponse({ type: PaginationResponse })
+  @Get('applications/:appId/logs')
   async findAll(
     @Query()
       { sort, search, pagination }: PaginationQuery,
@@ -57,7 +55,8 @@ export class LogController {
     return response;
   }
 
-  @Get(':id')
+  @UseGuards(UserOwnAppGuard)
+  @UseGuards(JwtGuard)@Get('applications/:appId/logs/:id')
   @ApiOkResponse({ type: LogEntity })
   async findOne(@Param('id') id: string) {
     return new LogEntity(await this.logService.getById(id));

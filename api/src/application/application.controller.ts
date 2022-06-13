@@ -68,7 +68,7 @@ export class ApplicationController {
   @Get(':id')
   @ApiOkResponse({ type: AppEntity })
   async findOne(@Param('id') id: string, @GetUser() user: User) {
-    return new AppEntity(await this.appService.getById(id, user));
+    return new AppEntity(await this.appService.getByIdAndUserId(id, user));
   }
 
   @Patch(':id')
