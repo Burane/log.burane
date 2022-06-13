@@ -10,6 +10,7 @@ export class AppEntity implements appWithStats {
     this.userId = app.userId;
     this.logMessagesCount = app.logMessagesCount
     this._count = app._count
+    this.webhookSecret = app.webhookSecret
   }
 
 
@@ -24,6 +25,9 @@ export class AppEntity implements appWithStats {
 
   @ApiProperty()
   userId: string;
+
+  @ApiProperty()
+  webhookSecret: string;
 
   @ApiProperty()
   _count: { logMessages: number };

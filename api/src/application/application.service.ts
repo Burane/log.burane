@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Application, Prisma, User } from '@prisma/client';
 import { Order, Sort } from '../utils/types/pagination';
+import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ApplicationService {
   constructor(
     private prisma: PrismaService,
+    private jwtService: JwtService,
   ) {
   }
 
@@ -173,5 +176,39 @@ export class ApplicationService {
       },
     });
     return { ...app, logMessagesCount: [...count] };
+  }
+
+  async createWebhook(id: string, user: User) {
+    const app = await this.prisma.application.findUnique({ where: { appUserId: { userId: user.id, id: id } } });
+
+    if (!app) throw new NotFoundException('No application found');
+
+    const token = this.jwtService.sign(
+      { appId: app.id },
+      { secret: app.id + app.userId },
+    );
+
+    const appUpdated = await this.prisma.application.update({
+      where: { appUserId: { userId: user.id, id: id } },
+      data: {
+        webhookSecret: token
+      },
+      include: {
+        _count: {
+          select: {
+            logMessages: true,
+          },
+        },
+      },
+    });
+
+    const count = await this.prisma.logMessage.groupBy({
+      by: ['level'],
+      _count: true,
+      where: {
+        applicationId: appUpdated.id,
+      },
+    });
+    return { ...appUpdated, logMessagesCount: [...count] };
   }
 }

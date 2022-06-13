@@ -3,7 +3,7 @@ import { IsString, MaxLength } from 'class-validator';
 import { Trim } from '../../utils/decorator/trim.decorator';
 import { Application } from '@prisma/client';
 
-export class CreateAppDto implements Omit<Application, 'id' | 'userId'> {
+export class CreateAppDto implements Omit<Application, 'id' | 'userId' | 'webhookSecret'> {
 
   @ApiProperty()
   @IsString()

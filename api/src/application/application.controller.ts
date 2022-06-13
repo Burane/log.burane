@@ -24,6 +24,15 @@ export class ApplicationController {
     return new AppEntity(app);
   }
 
+  @Post(':id/createWebhook')
+  @ApiCreatedResponse({ type: AppEntity })
+  async createWebhook(@Param('id') id: string, @GetUser() user: User) {
+    const app = await this.appService.createWebhook(id, user);
+    return new AppEntity(app);
+
+  }
+
+
   @ApiCreatedResponse({ type: PaginationResponse })
   @Get('')
   async findAll(
