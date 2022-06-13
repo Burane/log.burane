@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Application, Prisma, User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { Order, Sort } from '../utils/types/pagination';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
@@ -183,15 +183,17 @@ export class ApplicationService {
 
     if (!app) throw new NotFoundException('No application found');
 
+    const secret = randomUUID()
     const token = this.jwtService.sign(
       { appId: app.id },
-      { secret: app.id + app.userId },
+      { secret: app.id + app.userId + secret },
     );
 
     const appUpdated = await this.prisma.application.update({
       where: { appUserId: { userId: user.id, id: id } },
       data: {
-        webhookSecret: token
+        webhookSecret: secret,
+        webhookToken: token
       },
       include: {
         _count: {

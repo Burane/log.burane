@@ -1,6 +1,7 @@
-import { Application, Prisma } from '@prisma/client';
-import { ApiProperty } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { appWithStats } from '../../utils/types/AppWithStats';
+import { Exclude } from 'class-transformer';
 
 export class AppEntity implements appWithStats {
   constructor(app: appWithStats) {
@@ -8,11 +9,22 @@ export class AppEntity implements appWithStats {
     this.name = app.name;
     this.description = app.description;
     this.userId = app.userId;
-    this.logMessagesCount = app.logMessagesCount
-    this._count = app._count
-    this.webhookSecret = app.webhookSecret
+    this.logMessagesCount = app.logMessagesCount;
+    this._count = app._count;
+    this.webhookToken = app.webhookToken;
+    this.webhookSecret = app.webhookSecret;
+    this.discordWebhookUrl = app.discordWebhookUrl;
   }
 
+  @ApiProperty()
+  discordWebhookUrl: string;
+
+  @ApiProperty()
+  webhookToken: string;
+
+  @ApiHideProperty()
+  @Exclude()
+  webhookSecret: string;
 
   @ApiProperty()
   id: string;
@@ -27,13 +39,10 @@ export class AppEntity implements appWithStats {
   userId: string;
 
   @ApiProperty()
-  webhookSecret: string;
-
-  @ApiProperty()
   _count: { logMessages: number };
 
   @ApiProperty()
-  logMessagesCount: (Prisma.PickArray<Prisma.LogMessageGroupByOutputType, "level"[]> & { _count: number })[];
+  logMessagesCount: (Prisma.PickArray<Prisma.LogMessageGroupByOutputType, 'level'[]> & { _count: number })[];
 
 
 }

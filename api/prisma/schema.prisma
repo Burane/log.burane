@@ -38,22 +38,26 @@ enum LogLevels {
 }
 
 model Application {
-  id          String       @id @default(cuid())
-  name        String
-  description String
-  logMessages LogMessage[]
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  webhookSecret String?
+  id                String       @id @default(cuid())
+  name              String
+  description       String
+  logMessages       LogMessage[]
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  webhookSecret     String?
+  webhookToken      String?
+  discordWebhookUrl String?
+
   @@unique(fields: [id, userId], name: "appUserId")
 }
 
 model LogMessage {
   id            String      @id @default(cuid())
-  level         LogLevels    @default(INFO)
+  level         LogLevels   @default(INFO)
   date          DateTime
   message       String
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String
-    @@unique(fields: [id, applicationId], name: "logAppId")
+
+  @@unique(fields: [id, applicationId], name: "logAppId")
 }
