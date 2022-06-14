@@ -1,11 +1,10 @@
-import { forwardRef,  Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LogLevels, Prisma, Role } from '@prisma/client';
 import { Order, Sort } from '../utils/types/pagination';
 import { JwtService } from '@nestjs/jwt';
 import { ApplicationService } from '../application/application.service';
 import { HttpService } from '@nestjs/axios';
-import { switchAll } from 'rxjs';
 
 @Injectable()
 export class LogService {

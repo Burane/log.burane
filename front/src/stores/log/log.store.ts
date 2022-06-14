@@ -56,6 +56,7 @@ export const LogStoreModel = types
       appId: string,
       paginationQuery?: PaginationQueryType,
     ) {
+      if (!appId) return;
       self.isLoading = true;
       if (!paginationQuery) {
         paginationQuery = self.paginationQuery;

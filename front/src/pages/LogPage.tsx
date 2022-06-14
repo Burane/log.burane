@@ -6,7 +6,6 @@ import {
   Input,
   Pagination,
   ScrollArea,
-  Text,
   Title,
   Tooltip,
 } from '@mantine/core';

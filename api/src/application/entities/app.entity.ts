@@ -12,8 +12,8 @@ export class AppEntity implements appWithStats {
     this.logMessagesCount = app.logMessagesCount;
     this._count = app._count;
     this.webhookToken = app.webhookToken;
-    this.webhookSecret = app.webhookSecret;
-    this.discordWebhookUrl = app.discordWebhookUrl;
+    this.webhookSecret = app.webhookSecret ? app.webhookSecret : "";
+    this.discordWebhookUrl = app.discordWebhookUrl ? app.discordWebhookUrl : "";
   }
 
   @ApiProperty()

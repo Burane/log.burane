@@ -158,6 +158,18 @@ export const ApplicationStoreModel = types
       self.isLoading = false;
       return res;
     }),
+    generateWebhook: flow(function* ({ appId }: { appId: string }) {
+      self.isLoading = true;
+      const appApi = new AppApi();
+
+      const res: Result<ApplicationType> = yield appApi.generateWebhook({
+        id: appId,
+      });
+
+      yield self.fetchData();
+      self.isLoading = false;
+      return res;
+    }),
     update: flow(function* ({
       name,
       description,
