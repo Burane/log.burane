@@ -1,24 +1,27 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUrl, MaxLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 import { Trim } from '../../utils/decorator/trim.decorator';
 import { Application } from '@prisma/client';
 import { Optional } from '../../utils/types/Optional';
 
 export class UpdateAppDto implements Optional<Omit<Application, 'id' | 'userId' | 'webhookSecret' | 'webhookToken'>, 'name' | 'description' | 'discordWebhookUrl'> {
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @Trim()
   @MaxLength(255)
   name?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(1024)
   @Trim()
   description?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsUrl()
   @MaxLength(1024)
   @Trim()
