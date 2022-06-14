@@ -28,7 +28,7 @@ export const UpdateApp = observer(
 
     const webhookUrl = (token: string | null) => {
       if (token && token.length !== 0)
-        return `${import.meta.env.VITE_API_URL}logs/create/${token}`;
+        return `${import.meta.env.VITE_API_URL}/logs/create/${token}`;
       else return '';
     };
 
