@@ -1,12 +1,10 @@
-import { forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, Optional, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LogLevels, Prisma, Role } from '@prisma/client';
 import { Order, Sort } from '../utils/types/pagination';
 import { JwtService } from '@nestjs/jwt';
 import { ApplicationService } from '../application/application.service';
 import { HttpService } from '@nestjs/axios';
-import { inspect } from 'util';
-import * as util from 'util';
 
 @Injectable()
 export class LogService {
@@ -15,7 +13,9 @@ export class LogService {
     private jwtService: JwtService,
     @Inject(forwardRef(() => ApplicationService))
     private appService: ApplicationService,
-    private httpService: HttpService
+    private httpService: HttpService,
+    @Inject('TS_QUERY')
+    private tsQueryParse: (str: string) => string,
   ) {
   }
 
@@ -40,8 +40,7 @@ export class LogService {
 
     if ((level === LogLevels.ERROR || level === LogLevels.FATAL) && app.discordWebhookUrl) {
       // send webhook
-      console.log("SEND DISCORD");
-      const res = this.httpService.post(app.discordWebhookUrl,
+      this.httpService.post(app.discordWebhookUrl,
         {
           content: null,
           embeds: [
@@ -67,10 +66,9 @@ export class LogService {
           ],
           username: 'Log.Burane',
           attachments: [],
-        }).subscribe()
+        }).subscribe();
 
     }
-
 
 
     return await this.prisma.logMessage.create({ data: { date, level, message, applicationId: app.id } });
@@ -109,33 +107,38 @@ export class LogService {
           },
           {
             message: {
-              search: search,
+              search: this.tsQueryParse(search),
             },
           },
         ],
       };
     }
 
-    console.log(util.inspect(parameters,false,8,true));
-    const logMessages = await this.prisma.logMessage.findMany(parameters);
+    try {
+      const logMessages = await this.prisma.logMessage.findMany(parameters);
 
-    const countParamsNoSearch: Prisma.LogMessageCountArgs = {};
-    const countParamsSearch: Prisma.LogMessageCountArgs = { where: parameters.where };
+      const countParamsNoSearch: Prisma.LogMessageCountArgs = {};
+      const countParamsSearch: Prisma.LogMessageCountArgs = { where: parameters.where };
 
-    const countParams = parameters.where
-      ? countParamsSearch
-      : countParamsNoSearch;
+      const countParams = parameters.where
+        ? countParamsSearch
+        : countParamsNoSearch;
 
-    const totalSize = await this.prisma.logMessage.count(countParams);
-    return {
-      logMessages,
-      totalSize,
-      pageSize: pageSize,
-      pageIndex,
-      isPreviousPage: pageIndex > 0,
-      isNextPage: pageIndex * pageSize < totalSize - pageSize,
-      pageCount: Math.ceil(totalSize / pageSize),
-    };
+      const totalSize = await this.prisma.logMessage.count(countParams);
+      return {
+        logMessages,
+        totalSize,
+        pageSize: pageSize,
+        pageIndex,
+        isPreviousPage: pageIndex > 0,
+        isNextPage: pageIndex * pageSize < totalSize - pageSize,
+        pageCount: Math.ceil(totalSize / pageSize),
+      };
+    } catch (e) {
+      throw new BadRequestException('Incorrect search syntax');
+    }
+
+
   }
 
 }
