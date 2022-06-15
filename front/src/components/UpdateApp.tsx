@@ -22,11 +22,11 @@ export const UpdateApp = observer(
     const schema = z.object({
       name: z.string(),
       description: z.string(),
-      pushUrl: z.nullable(z.string()),
-      discordWebhookUrl: z.nullable(z.string()),
+      pushUrl: z.string(),
+      discordWebhookUrl: z.string(),
     });
 
-    const webhookUrl = (token: string | null) => {
+    const webhookUrl = (token?: string) => {
       if (token && token.length !== 0)
         return `${import.meta.env.VITE_API_URL}/logs/create/${token}`;
       else return '';

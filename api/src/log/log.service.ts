@@ -38,7 +38,8 @@ export class LogService {
 
     if ((level === LogLevels.ERROR || level === LogLevels.FATAL) && app.discordWebhookUrl) {
       // send webhook
-      this.httpService.post(app.discordWebhookUrl,
+      console.log("SEND DISCORD");
+      const res = this.httpService.post(app.discordWebhookUrl,
         {
           content: null,
           embeds: [
@@ -48,21 +49,27 @@ export class LogService {
               url: process.env.CLIENT_URL,
               color: () => {
                 switch (level) {
-                  case LogLevels.ERROR: return 14038823;
-                  case LogLevels.FATAL: return 8388736;
-                  default: return 5814783
+                  case LogLevels.ERROR:
+                    return 14038823;
+                  case LogLevels.FATAL:
+                    return 8388736;
+                  default:
+                    return 5814783;
                 }
               },
               footer: {
-                text: "Log.Burane"
+                text: 'Log.Burane',
               },
               timestamp: date,
-            }
+            },
           ],
-          username: "Log.Burane",
-          attachments: []
-        })
+          username: 'Log.Burane',
+          attachments: [],
+        }).subscribe()
+
     }
+
+
 
     return await this.prisma.logMessage.create({ data: { date, level, message, applicationId: app.id } });
   }

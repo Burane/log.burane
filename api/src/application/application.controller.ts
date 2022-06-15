@@ -75,10 +75,10 @@ export class ApplicationController {
   @ApiCreatedResponse({ type: AppEntity })
   async update(
     @Param('id') id: string,
-    @Body() { name, description }: UpdateAppDto,
+    @Body() { name, description, discordWebhookUrl }: UpdateAppDto,
     @GetUser() user: User,
   ) {
-    return await this.appService.updateById(id, user, name, description);
+    return await this.appService.updateById(id, user, name, description, discordWebhookUrl);
   }
 
   @Delete(':id')

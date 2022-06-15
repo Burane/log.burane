@@ -3,6 +3,7 @@ import { IsDate, IsEnum, IsOptional, IsString, MaxLength } from 'class-validator
 import { Trim } from '../../utils/decorator/trim.decorator';
 import { LogLevels, LogMessage } from '@prisma/client';
 import { logLevelArray } from '../../utils/types/logLevel.array';
+import { Type } from 'class-transformer';
 
 export class CreateLogDto implements Omit<LogMessage, 'id' | 'applicationId'> {
 
@@ -14,6 +15,7 @@ export class CreateLogDto implements Omit<LogMessage, 'id' | 'applicationId'> {
 
   @ApiProperty()
   @IsDate()
+  @Type(() => Date)
   date: Date;
 
   @ApiPropertyOptional({ enum: logLevelArray })

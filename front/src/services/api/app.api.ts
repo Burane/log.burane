@@ -86,16 +86,18 @@ export class AppApi {
   async updateApplication({
     name,
     description,
+    discordWebhookUrl,
     appId,
   }: {
     name: string;
     description: string;
+    discordWebhookUrl?: string;
     appId: string;
   }) {
     try {
       const response = await this.axios.patch<ApplicationType>(
         `applications/${appId}`,
-        { name, description },
+        { name, description, discordWebhookUrl },
       );
 
       const data = response.data;

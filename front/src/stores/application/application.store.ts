@@ -173,10 +173,12 @@ export const ApplicationStoreModel = types
     update: flow(function* ({
       name,
       description,
+      discordWebhookUrl,
       appId,
     }: {
       name: string;
       description: string;
+      discordWebhookUrl?: string;
       appId: string;
     }) {
       self.isLoading = true;
@@ -185,6 +187,7 @@ export const ApplicationStoreModel = types
       const res: Result<ApplicationType> = yield appApi.updateApplication({
         name,
         description,
+        discordWebhookUrl,
         appId,
       });
 

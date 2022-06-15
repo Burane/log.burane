@@ -156,10 +156,10 @@ export class ApplicationService {
     return { ...app, logMessagesCount: [...count] };
   }
 
-  async updateById(id: string, user: User, name: string, description: string) {
+  async updateById(id: string, user: User, name: string, description: string, discordWebhookUrl: string) {
     const app = await this.prisma.application.update({
       where: { appUserId: { id, userId: user.id } },
-      data: { name: name, description: description },
+      data: { name: name, description: description, discordWebhookUrl: discordWebhookUrl },
       include: {
         _count: {
           select: {
