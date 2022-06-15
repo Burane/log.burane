@@ -5,6 +5,8 @@ import { Order, Sort } from '../utils/types/pagination';
 import { JwtService } from '@nestjs/jwt';
 import { ApplicationService } from '../application/application.service';
 import { HttpService } from '@nestjs/axios';
+import { inspect } from 'util';
+import * as util from 'util';
 
 @Injectable()
 export class LogService {
@@ -98,6 +100,7 @@ export class LogService {
 
     if (search && search?.length > 0) {
       parameters.where = {
+        ...parameters.where,
         OR: [
           {
             level: {
@@ -113,6 +116,7 @@ export class LogService {
       };
     }
 
+    console.log(util.inspect(parameters,false,8,true));
     const logMessages = await this.prisma.logMessage.findMany(parameters);
 
     const countParamsNoSearch: Prisma.LogMessageCountArgs = {};
