@@ -13,9 +13,9 @@ export class ApplicationService {
   ) {
   }
 
-  async create(name: string, description: string, user: User) {
+  async create(name: string, description: string, discordWebhookUrl: string, user: User) {
     const app = await this.prisma.application.create({
-      data: { description, name, userId: user.id },
+      data: { description, name, userId: user.id, discordWebhookUrl },
       include: {
         _count: {
           select: {
@@ -31,8 +31,8 @@ export class ApplicationService {
         applicationId: app.id,
       },
     });
+    await this.createWebhook(app.id, user);
     return { ...app, logMessagesCount: [...count] };
-
   }
 
 
@@ -204,7 +204,7 @@ export class ApplicationService {
 
     if (!app) throw new NotFoundException('No application found');
 
-    const secret = randomUUID()
+    const secret = randomUUID();
     const token = this.jwtService.sign(
       { appId: app.id },
       { secret: app.id + app.userId + secret },
@@ -214,7 +214,7 @@ export class ApplicationService {
       where: { appUserId: { userId: user.id, id: id } },
       data: {
         webhookSecret: secret,
-        webhookToken: token
+        webhookToken: token,
       },
       include: {
         _count: {

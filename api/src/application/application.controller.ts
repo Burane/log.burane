@@ -19,8 +19,8 @@ export class ApplicationController {
 
   @Post('create')
   @ApiCreatedResponse({ type: AppEntity })
-  async create(@Body() { name, description }: CreateAppDto, @GetUser() user: User) {
-    const app = await this.appService.create(name, description, user);
+  async create(@Body() { name, description, discordWebhookUrl }: CreateAppDto, @GetUser() user: User) {
+    const app = await this.appService.create(name, description, discordWebhookUrl, user);
     return new AppEntity(app);
   }
 

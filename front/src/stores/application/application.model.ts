@@ -41,8 +41,8 @@ export const ApplicationModel = types.model('Application').props({
   userId: types.string,
   _count: CountModel,
   logMessagesCount: types.array(logMessagesCountModel),
-  webhookToken: types.maybe(types.string),
-  discordWebhookUrl: types.maybe(types.string),
+  webhookToken: types.maybeNull(types.string),
+  discordWebhookUrl: types.maybeNull(types.string),
 });
 
 export type ApplicationType = Instance<typeof ApplicationModel>;

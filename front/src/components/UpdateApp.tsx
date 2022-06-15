@@ -1,12 +1,20 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { Button, Group, Paper, Textarea, TextInput } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Paper,
+  Textarea,
+  TextInput,
+  Tooltip,
+} from '@mantine/core';
 import { z } from 'zod';
 import { useForm, zodResolver } from '@mantine/form';
 import { useStore } from '../providers/StoreProvider';
 import { NotificationProps, showNotification } from '@mantine/notifications';
-import { Check, Loader, Refresh, X } from 'tabler-icons-react';
+import { Check, Copy, Refresh, X } from 'tabler-icons-react';
 import { ApplicationSnapshotType } from '../stores/application/application.model';
 import { observer } from 'mobx-react-lite';
+import { useClipboard } from '@mantine/hooks';
 
 export const UpdateApp = observer(
   ({
@@ -18,15 +26,16 @@ export const UpdateApp = observer(
   }) => {
     const [loading, setLoading] = useState(false);
     const { appStore } = useStore();
+    const clipboard = useClipboard({ timeout: 200 });
 
     const schema = z.object({
       name: z.string(),
       description: z.string(),
       pushUrl: z.string(),
-      discordWebhookUrl: z.string(),
+      discordWebhookUrl: z.nullable(z.string()),
     });
 
-    const webhookUrl = (token?: string) => {
+    const webhookUrl = (token?: string | null) => {
       if (token && token.length !== 0)
         return `${import.meta.env.VITE_API_URL}/logs/create/${token}`;
       else return '';
@@ -38,7 +47,9 @@ export const UpdateApp = observer(
         name: application.name,
         description: application.description,
         pushUrl: webhookUrl(application.webhookToken),
-        discordWebhookUrl: application.discordWebhookUrl,
+        discordWebhookUrl: application.discordWebhookUrl
+          ? application.discordWebhookUrl
+          : '',
       },
     });
 
@@ -53,7 +64,15 @@ export const UpdateApp = observer(
 
     const handleSubmit = async (values: FormValues) => {
       setLoading(true);
-      const res = await appStore.update({ appId: application.id, ...values });
+      const proxyValues = new Proxy(values, {
+        get: (obj, prop: keyof typeof values) =>
+          obj[prop] === '' ? null : obj[prop],
+      });
+      // if (values.discordWebhookUrl === '') values.discordWebhookUrl = null;
+      const res = await appStore.update({
+        appId: application.id,
+        ...proxyValues,
+      });
       if (res.ok) {
         showNotification({
           title: 'Success !',
@@ -99,8 +118,27 @@ export const UpdateApp = observer(
               label="Push url"
               placeholder="Push url"
               {...form.getInputProps('pushUrl')}
-              rightSection={<Refresh onClick={() => generateWebhook()} />}
+              disabled
               sx={{ cursor: 'pointer' }}
+              rightSectionWidth={70}
+              rightSection={
+                <Group spacing="xs" noWrap>
+                  <Tooltip label="Copy to clipboard">
+                    <Copy
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        clipboard.copy(form.values.pushUrl);
+                      }}
+                    />
+                  </Tooltip>
+                  <Tooltip label="Generate new push url">
+                    <Refresh
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => generateWebhook()}
+                    />
+                  </Tooltip>
+                </Group>
+              }
             />
             <TextInput
               label="Discord webhook url"

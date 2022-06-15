@@ -44,9 +44,9 @@ model Application {
   logMessages       LogMessage[]
   user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId            String
-  webhookSecret     String?      @default("")
-  webhookToken      String?      @default("")
-  discordWebhookUrl String?      @default("")
+  webhookSecret     String?
+  webhookToken      String?
+  discordWebhookUrl String?
 
   @@unique(fields: [id, userId], name: "appUserId")
 }

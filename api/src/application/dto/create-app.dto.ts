@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUrl, MaxLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmpty, IsOptional, IsString, IsUrl, MaxLength, ValidateIf } from 'class-validator';
 import { Trim } from '../../utils/decorator/trim.decorator';
 import { Application } from '@prisma/client';
 import { Optional } from '../../utils/types/Optional';
@@ -18,7 +18,8 @@ export class CreateAppDto implements Optional<Omit<Application, 'id' | 'userId' 
   @Trim()
   description: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsUrl()
   @MaxLength(1024)
   @Trim()

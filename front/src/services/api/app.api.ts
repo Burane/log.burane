@@ -54,14 +54,16 @@ export class AppApi {
   async createApplication({
     name,
     description,
+    discordWebhookUrl,
   }: {
     name: string;
     description: string;
+    discordWebhookUrl?: string | null;
   }) {
     try {
       const response = await this.axios.post<ApplicationType>(
         'applications/create',
-        { name, description },
+        { name, description, discordWebhookUrl },
       );
 
       const data = response.data;
@@ -91,7 +93,7 @@ export class AppApi {
   }: {
     name: string;
     description: string;
-    discordWebhookUrl?: string;
+    discordWebhookUrl?: string | null;
     appId: string;
   }) {
     try {

@@ -1,18 +1,10 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import {
-  Button,
-  Group,
-  LoadingOverlay,
-  Notification,
-  Paper,
-  Textarea,
-  TextInput,
-} from '@mantine/core';
+import { Button, Group, Paper, Textarea, TextInput } from '@mantine/core';
 import { z } from 'zod';
 import { useForm, zodResolver } from '@mantine/form';
 import { useStore } from '../providers/StoreProvider';
 import { NotificationProps, showNotification } from '@mantine/notifications';
-import { Check, Cross, X } from 'tabler-icons-react';
+import { Check, X } from 'tabler-icons-react';
 
 export const CreateApp = ({
   setDrawerState,
@@ -25,6 +17,7 @@ export const CreateApp = ({
   const schema = z.object({
     name: z.string(),
     description: z.string(),
+    discordWebhookUrl: z.nullable(z.string()),
   });
 
   const form = useForm({
@@ -32,6 +25,7 @@ export const CreateApp = ({
     initialValues: {
       name: '',
       description: '',
+      discordWebhookUrl: '',
     },
   });
 
@@ -39,7 +33,12 @@ export const CreateApp = ({
 
   const handleSubmit = async (values: FormValues) => {
     setLoading(true);
-    const res = await appStore.create(values);
+    const proxyValues = new Proxy(values, {
+      get: (obj, prop: keyof typeof values) =>
+        obj[prop] === '' ? null : obj[prop],
+    });
+    console.log(proxyValues);
+    const res = await appStore.create(proxyValues);
     if (res.ok) {
       showNotification({
         title: 'Success !',
@@ -80,6 +79,11 @@ export const CreateApp = ({
             placeholder="Application description"
             required
             {...form.getInputProps('description')}
+          />
+          <TextInput
+            label="Discord webhook url"
+            placeholder="Discord webhook url"
+            {...form.getInputProps('discordWebhookUrl')}
           />
           <Group position="center" mt={40}>
             <Button loading={loading} type="submit">

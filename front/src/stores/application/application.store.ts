@@ -142,9 +142,11 @@ export const ApplicationStoreModel = types
     create: flow(function* ({
       name,
       description,
+      discordWebhookUrl,
     }: {
       name: string;
       description: string;
+      discordWebhookUrl?: string | null;
     }) {
       self.isLoading = true;
       const appApi = new AppApi();
@@ -152,6 +154,7 @@ export const ApplicationStoreModel = types
       const res: Result<ApplicationType> = yield appApi.createApplication({
         name,
         description,
+        discordWebhookUrl,
       });
 
       yield self.fetchData();
@@ -178,7 +181,7 @@ export const ApplicationStoreModel = types
     }: {
       name: string;
       description: string;
-      discordWebhookUrl?: string;
+      discordWebhookUrl?: string | null;
       appId: string;
     }) {
       self.isLoading = true;
