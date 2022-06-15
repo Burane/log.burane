@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { StoreProvider } from './providers/StoreProvider';
 import { RootStoreModel } from './stores/root.store';
@@ -19,7 +19,6 @@ import { PageNotFound } from './pages/PageNotFound';
 import { ResetPassword } from './pages/ResetPassword';
 import { Register } from './pages/Register';
 import { Account } from './pages/Account';
-import { Security } from './pages/Security';
 import { Dashboard } from './pages/Dashbard';
 import { useLocalStorage } from '@mantine/hooks';
 import { Api } from './services/api/api';
@@ -131,7 +130,6 @@ export const App = observer(({}) => {
                   <Route element={<Layout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/account" element={<Account />} />
-                    <Route path="/security" element={<Security />} />
                     <Route path="/logs/:appId" element={<LogPage />} />
                   </Route>
                 </Route>

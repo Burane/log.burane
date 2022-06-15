@@ -95,7 +95,7 @@ const navBarLinks: { icon: Icon; label: string; navigate: string }[] = [
   // { icon: DeviceDesktopAnalytics, label: 'Analytics', navigate: '/dashboard' },
   // { icon: CalendarStats, label: 'Releases', navigate: '/dashboard' },
   { icon: User, label: 'Account', navigate: '/account' },
-  { icon: Fingerprint, label: 'Security', navigate: '/security' },
+  // { icon: Fingerprint, label: 'Security', navigate: '/security' },
   // { icon: Settings, label: 'Settings', navigate: '/dashboard' },
 ];
 
