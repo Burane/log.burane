@@ -62,8 +62,40 @@ export const AuthStoreModel = types
       return response;
     }),
 
-    forgotPassword: flow(function* () {
-      console.log('forgotPassword');
+    forgotPassword: flow(function* ({ email }: { email: string }) {
+      self.setStatus('pending');
+
+      const authAPI = new Api();
+      const response: Result<EmptyObject> = yield authAPI.forgotPassword({
+        email,
+      });
+
+      self.setStatus('done');
+      return response;
+    }),
+    resetPassword: flow(function* ({
+      password,
+      passwordConfirmation,
+      token,
+    }: {
+      password: string;
+      passwordConfirmation: string;
+      token: string;
+    }) {
+      self.setStatus('pending');
+
+      const authAPI = new Api();
+      const response: Result<EmptyObject> = yield authAPI.resetPassword({
+        password,
+        passwordConfirmation,
+        token,
+      });
+      if (response.ok) {
+        self.rootStore.reset();
+      }
+
+      self.setStatus('done');
+      return response;
     }),
   }));
 

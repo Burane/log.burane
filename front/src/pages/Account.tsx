@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import {
   Avatar,
   Button,
+  Center,
   Container,
   Group,
   Input,
   LoadingOverlay,
   Paper,
+  Stack,
   Text,
   Title,
   Tooltip,
@@ -19,7 +21,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 
 export const Account = observer(({}) => {
-  const { userStore } = useStore();
+  const { userStore, authStore } = useStore();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const schema = z.object({
@@ -60,6 +62,26 @@ export const Account = observer(({}) => {
       });
     }
     setLoading(false);
+  }
+
+  async function resetPassword() {
+    const res = await authStore.forgotPassword({ email: userStore.email });
+    if (res.ok) {
+      showNotification({
+        title: 'Success !',
+        message: 'An email has been sent !',
+        color: 'green',
+        icon: <Check />,
+      });
+      setEditing(false);
+    } else {
+      showNotification({
+        title: 'Error !',
+        message: res.data.message,
+        color: 'red',
+        icon: <X />,
+      });
+    }
   }
 
   return (
@@ -129,6 +151,13 @@ export const Account = observer(({}) => {
             {...form.getInputProps('username')}
           />
         </form>
+        <Center mt={30}>
+          <Stack spacing="xs">
+            <Tooltip label="An email will be sent">
+              <Button onClick={() => resetPassword()}>Change password</Button>
+            </Tooltip>
+          </Stack>
+        </Center>
       </Paper>
     </Container>
   );

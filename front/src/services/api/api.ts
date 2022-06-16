@@ -45,7 +45,9 @@ export class Api {
           failedRequest.response.config.headers.Authorization =
             'Bearer ' + (await this.getAccessToken());
         } else {
-          // TODO: unable to refresh token
+          // unable to refresh token
+          localStorage.removeItem('accessToken');
+          window.location.reload();
         }
       },
       {

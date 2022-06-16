@@ -15,8 +15,8 @@ import { ArrowLeft, Check, X } from 'tabler-icons-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm, zodResolver } from '@mantine/form';
 import { z } from 'zod';
-import { Api } from '../services/api/api';
 import { NotificationProps, showNotification } from '@mantine/notifications';
+import { useStore } from '../providers/StoreProvider';
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -44,6 +44,7 @@ export function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
+  const { authStore } = useStore();
 
   const schema = z.object({
     password: z.string(),
@@ -62,8 +63,7 @@ export function ResetPassword() {
 
   const handleSubmit = async (values: FormValues) => {
     if (!token) return;
-    const api = new Api();
-    const res = await api.resetPassword({
+    const res = await authStore.resetPassword({
       password: values.password,
       passwordConfirmation: values.passwordConfirmation,
       token,

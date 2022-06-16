@@ -1,23 +1,23 @@
 import React from 'react';
 import {
+  Anchor,
+  Box,
+  Button,
+  Center,
+  Container,
   createStyles,
+  Group,
   Paper,
-  Title,
   Text,
   TextInput,
-  Button,
-  Container,
-  Group,
-  Anchor,
-  Center,
-  Box,
+  Title,
 } from '@mantine/core';
 import { ArrowLeft, Check, X } from 'tabler-icons-react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm, zodResolver } from '@mantine/form';
-import { Api } from '../services/api/api';
 import { NotificationProps, showNotification } from '@mantine/notifications';
+import { useStore } from '../providers/StoreProvider';
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -43,6 +43,7 @@ const useStyles = createStyles((theme) => ({
 export function ForgotPassword() {
   const { classes } = useStyles();
   const navigate = useNavigate();
+  const { authStore } = useStore();
 
   const schema = z.object({
     email: z.string().email({ message: 'Invalid email' }),
@@ -58,8 +59,7 @@ export function ForgotPassword() {
   type FormValues = typeof form.values;
 
   const handleSubmit = async (values: FormValues) => {
-    const api = new Api();
-    const res = await api.forgotPassword({
+    const res = await authStore.forgotPassword({
       email: values.email,
     });
     if (res.ok) {
