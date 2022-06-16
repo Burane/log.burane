@@ -81,12 +81,11 @@ export class AuthService {
       { email: user.email },
       { secret: user.password + user.id + user.createdAt, expiresIn: 3600 },
     );
-
     await this.mailerService.sendMail({
       to: user.email,
       from: process.env.RESET_PASSWORD_SENDER_EMAIL,
       subject: 'Réinitialisation de votre mot de passe',
-      template: path.join(process.cwd(), 'resetPasswordMail'),
+      template: "resetPasswordMail",
       context: { user, token, client_url: process.env.CLIENT_URL },
     });
   }

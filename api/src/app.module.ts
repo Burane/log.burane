@@ -32,7 +32,7 @@ import { LogModule } from './log/log.module';
         from: '"nest-modules" <modules@nestjs.com>',
       },
       template: {
-        dir: path.join(process.cwd(), 'src/templates'),
+        dir: path.join(__dirname,'templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
