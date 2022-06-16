@@ -171,9 +171,9 @@ export class Api {
   async refreshToken(): Promise<Result<UserSnapshot>> {
     try {
       const response = await this.axios.get<
-        UserSnapshot & { accessToken: string }
+        { user: UserSnapshot } & { accessToken: string }
       >('/auth/refreshToken');
-      const { accessToken, ...user } = response.data;
+      const { accessToken, user } = response.data;
       await localStorage.setItem('accessToken', accessToken);
       return { ok: true, data: user };
     } catch (e) {

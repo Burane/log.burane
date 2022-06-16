@@ -28,7 +28,7 @@ export function saveString(key: string, value: string): boolean {
 }
 
 /**
- * Loads something from storage and runs it thru JSON.parse.
+ * Loads something from storage and runs it through JSON.parse.
  *
  * @param key The key to fetch.
  */

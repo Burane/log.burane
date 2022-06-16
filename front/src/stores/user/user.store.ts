@@ -12,7 +12,7 @@ export const UserStoreModel = types
     updatedAt: types.optional(types.string, ''),
   })
   .actions((self) => ({
-    saveUser: (newUser: UserSnapshot): void => {
+    saveUser: (newUser: UserSnapshot) => {
       self.id = newUser.id;
       self.email = newUser.email;
       self.role = newUser.role;

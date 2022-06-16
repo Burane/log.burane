@@ -24,6 +24,8 @@ import { useLocalStorage } from '@mantine/hooks';
 import { Api } from './services/api/api';
 import { NotificationsProvider } from '@mantine/notifications';
 import { LogPage } from './pages/LogPage';
+import { Result } from './services/api/api.types';
+import { UserSnapshot } from './stores/user/user.store';
 
 export const App = observer(({}) => {
   const [rootStore, setRootStore] = useState<RootStoreModel | undefined>(
@@ -47,10 +49,12 @@ export const App = observer(({}) => {
       if (rootStore) {
         const authApi = new Api();
 
-        const refreshResult = await authApi.refreshToken();
+        const refreshResult: Result<UserSnapshot> =
+          await authApi.refreshToken();
 
         if (refreshResult.ok) {
-          rootStore.userStore.saveUser(refreshResult.data);
+          const user = refreshResult.data;
+          rootStore.userStore.saveUser(user);
         }
 
         if (!refreshResult.ok) {
