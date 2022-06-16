@@ -52,7 +52,7 @@ export function ForgotPassword() {
   const form = useForm({
     schema: zodResolver(schema),
     initialValues: {
-      email: 'superadmin@test.com',
+      email: '',
     },
   });
 

@@ -30,9 +30,10 @@ export const Register = observer(({}) => {
   const form = useForm({
     schema: zodResolver(schema),
     initialValues: {
-      email: 'superadmin@test.com',
-      password: 'Test1234',
-      passwordConfirmation: 'Test1234',
+      email: '',
+      username: '',
+      password: '',
+      passwordConfirmation: '',
     },
   });
 
@@ -42,6 +43,7 @@ export const Register = observer(({}) => {
     const api = new Api();
     let res = await api.register({
       email: values.email,
+      username: values.username,
       password: values.password,
       passwordConfirmation: values.passwordConfirmation,
     });
@@ -87,9 +89,15 @@ export const Register = observer(({}) => {
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
           <TextInput
             label="Email"
-            placeholder="you@mantine.dev"
+            placeholder="Your email"
             required
             {...form.getInputProps('email')}
+          />
+          <TextInput
+            label="Username"
+            placeholder="Your username"
+            required
+            {...form.getInputProps('username')}
           />
           <PasswordInput
             label="Password"

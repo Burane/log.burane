@@ -114,10 +114,12 @@ export class Api {
 
   async register({
     password,
+    username,
     passwordConfirmation,
     email,
   }: {
     password: string;
+    username: string;
     passwordConfirmation: string;
     email: string;
   }): Promise<Result<EmptyObject>> {
@@ -126,6 +128,7 @@ export class Api {
         password,
         passwordConfirmation,
         email,
+        username,
       });
       localStorage.removeItem('accessToken');
       return { ok: true, data: {} };

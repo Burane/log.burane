@@ -29,8 +29,8 @@ export const Login = observer(({}) => {
   const form = useForm({
     schema: zodResolver(schema),
     initialValues: {
-      email: 'superadmin@test.com',
-      password: 'Test1234',
+      email: '',
+      password: '',
     },
   });
 
