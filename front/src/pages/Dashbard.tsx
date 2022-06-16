@@ -69,7 +69,7 @@ export const Dashboard = observer(({}) => {
       {appStore.applications.map((app) => (
         <AppCard key={app.id} application={app} />
       ))}
-      <Center>
+      <Center mt={20}>
         <Pagination
           total={appStore.pagination.pageCount}
           size="lg"
