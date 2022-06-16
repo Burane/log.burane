@@ -118,14 +118,10 @@ export class UserService {
     });
   }
 
-  /*
-  @param refreshToken: string
-  @returns User
-  */
   async updateById(id: string, updateUserDto: UpdateUserDto) {
     if (updateUserDto.email) {
       const userExists = await this.getByEmail(updateUserDto.email);
-      if (userExists) throw new ConflictException('Email is already in use');
+      if (userExists && userExists.id !== id) throw new ConflictException('Email is already in use');
     }
 
     const user = await this.getById(id);
@@ -159,12 +155,6 @@ export class UserService {
     });
   }
 
-  /*
-   * update password
-   * @param id
-   * @param updatePasswordDto
-   * @returns {Promise<void>}
-   */
   async updatePasswordById(id: string, password: string) {
     return await this.prisma.user.update({
       where: { id },

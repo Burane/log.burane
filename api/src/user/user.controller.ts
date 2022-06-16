@@ -29,12 +29,14 @@ import { UserEntity } from './entities/user.entity';
 import { getRefreshTokenExpiration } from 'src/utils';
 import { PaginationQuery, PaginationResponse } from '../utils/types/pagination';
 import { FileInterceptor } from '@nestjs/platform-express';
+import * as bcrypt from 'bcrypt';
 
 @UseGuards(JwtGuard)
 @Controller('users')
 @ApiBearerAuth()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {
+  }
 
   @UseGuards(CanCUDUserGuard)
   @Post('create')
@@ -50,7 +52,7 @@ export class UserController {
   @Get('')
   async findAll(
     @Query()
-    { sort, search, pagination }: PaginationQuery,
+      { sort, search, pagination }: PaginationQuery,
   ) {
     const { pageSize, pageIndex } = pagination ?? {};
     const {
@@ -95,12 +97,21 @@ export class UserController {
   ) {
     const updatedUser = await this.userService.updateById(id, updateUserDto);
 
-    res.cookie('refreshToken', updatedUser.refreshToken, {
-      httpOnly: true,
-      expires: getRefreshTokenExpiration(),
-      secure: true,
-      sameSite: 'none',
-    });
+
+    if (updateUserDto.password) {
+      const isPasswordValid = await bcrypt.compare(
+        updateUserDto.password,
+        updatedUser.password,
+      );
+      if (isPasswordValid) {
+        res.cookie('refreshToken', updatedUser.refreshToken, {
+          httpOnly: true,
+          expires: getRefreshTokenExpiration(),
+          secure: true,
+          sameSite: 'none',
+        });
+      }
+      }
 
     return new UserEntity(updatedUser);
   }
@@ -114,9 +125,7 @@ export class UserController {
 
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', {
-
-  }))
+  @UseInterceptors(FileInterceptor('file', {}))
   uploadFile(@UploadedFile() file: Express.Multer.File) {
 
   }

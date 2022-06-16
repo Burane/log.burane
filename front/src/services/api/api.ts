@@ -247,4 +247,34 @@ export class Api {
       return { ok: false, data: { message: 'unknown', statusCode: 500 } };
     }
   }
+  async modifyAccount({
+    email,
+    username,
+    userId,
+  }: {
+    email: string;
+    username: string;
+    userId: string;
+  }): Promise<Result<UserSnapshot>> {
+    try {
+      const response = await this.axios.patch<UserSnapshot>(
+        `/users/${userId}`,
+        { email, username },
+      );
+      return { ok: true, data: response.data };
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const axiosError = e as AxiosError<ApiProblem>;
+        return {
+          ok: false,
+          data: axiosError?.response?.data ?? {
+            message: 'unknown',
+            statusCode: 500,
+          },
+        };
+      }
+      console.error(e);
+      return { ok: false, data: { message: 'unknown', statusCode: 500 } };
+    }
+  }
 }
