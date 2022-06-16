@@ -13,6 +13,7 @@ import { useStore } from '../providers/StoreProvider';
 import { useParams } from 'react-router-dom';
 import { LogCard } from '../components/LogCard';
 import { AlertCircle, Search } from 'tabler-icons-react';
+import { defaultPaginationQuery } from '../stores/log/log.store';
 
 export const LogPage = observer(({}) => {
   const { logStore } = useStore();
@@ -20,7 +21,7 @@ export const LogPage = observer(({}) => {
 
   useEffect(() => {
     if (!appId) return;
-    logStore.fetchData(appId);
+    logStore.fetchData(appId, defaultPaginationQuery);
   }, []);
 
   const rightSection = (

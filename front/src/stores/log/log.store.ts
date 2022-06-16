@@ -20,7 +20,7 @@ const defaultPagination: PaginationType = {
   pageIndex: 0,
   isPreviousPage: false,
 };
-const defaultPaginationQuery: PaginationQueryType = {
+export const defaultPaginationQuery: PaginationQueryType = {
   pagination: { pageIndex: 0, pageSize: 15 },
   search: undefined,
   sort: undefined,
