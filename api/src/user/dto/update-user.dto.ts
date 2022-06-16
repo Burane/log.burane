@@ -7,7 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Role } from '@prisma/client';
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { roleArray } from '../../utils/types/role.array';
 import { PASSWORD_REGEX } from 'src/constants';
 import { Match } from 'src/utils/decorator/match.decorator';
@@ -35,7 +35,8 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @Trim()
   newPassword?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(255)
   @Trim()
