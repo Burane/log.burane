@@ -1,6 +1,6 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, Optional, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { LogLevels, Prisma, Role } from '@prisma/client';
+import { LogLevels, Prisma } from '@prisma/client';
 import { Order, Sort } from '../utils/types/pagination';
 import { JwtService } from '@nestjs/jwt';
 import { ApplicationService } from '../application/application.service';
@@ -95,6 +95,7 @@ export class LogService {
     } else {
       parameters.orderBy = [{ date: 'asc' }];
     }
+    
 
     if (search && search?.length > 0) {
       parameters.where = {
@@ -102,7 +103,7 @@ export class LogService {
         OR: [
           {
             level: {
-              in: [Role[search.toUpperCase()]],
+              in: [LogLevels[search.toUpperCase()]],
             },
           },
           {
