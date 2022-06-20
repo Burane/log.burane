@@ -98,12 +98,13 @@ export class LogService {
     
 
     if (search && search?.length > 0) {
+
       parameters.where = {
         ...parameters.where,
         OR: [
           {
             level: {
-              in: [LogLevels[search.toUpperCase()]],
+              in: search.toUpperCase().split(' ').filter(val => LogLevels[val]),
             },
           },
           {
